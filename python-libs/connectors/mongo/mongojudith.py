@@ -3,7 +3,7 @@ import json
 
 class MongoJudith(object):
 
-    def __init__(self, host = 'localhost', port = 27017 , db  = 'judith-tcc'):
+    def __init__(self, host = 'localhost', port = 27017 , db  = 'judith-project'):
        setattr(self,'client', MongoClient( host , port ) )
        setattr(self,'mongo_db', self.client[ db ])
 
@@ -24,7 +24,7 @@ class MongoJudith(object):
 class TwitterDB( MongoJudith ):
 
     def __init__(self, ):
-        MongoJudith.__init__( self, )
+        MongoJudith.__init__( self, db='judith-twitter')
 
     def default_collection_name(self):
         return 'twitters'

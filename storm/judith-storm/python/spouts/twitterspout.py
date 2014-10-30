@@ -12,23 +12,23 @@ from mongojudith import TwitterDB
 
 class TwitterSpout(storm.Spout):
 
-
     @classmethod
-    def __check_is_new_twitter__(self, generator_tweet, keys_words, twitter_db):
+    def __check_is_new_twitter__(self, search, twitter_db):
         tweets = []
         try:
-            
+            twitter_api = TwitterApi()
+            generator_tweet = twitter_api.find_hashtags( keys_words = search['keysWords'],
+                                                         language = search['language'],
+                                                         qtd_page = 100 )
             content = generator_tweet.next()
-
-            if twitter_db.is_new_tweet( keys_words, content['text'] ) is True:
-                twitter_db.save_last_twitter( keys_words, content['text'] )
+            if twitter_db.is_new_tweet( search['keysWords'], content['text'] ) is True:
+                twitter_db.save_last_twitter( search['keysWords'], content['text'] )
                 while content:
                     try:
                         tweets.append( content )
                         content = generator_tweet.next()
                     except StopIteration as e:
                        break
-
         except Exception as ex:
             raise Exception('origin: __check_is_new_twitter__ : %s ' % str(ex))
         return tweets
@@ -37,43 +37,28 @@ class TwitterSpout(storm.Spout):
     @classmethod
     def nextTuple(self):
         try:
-            
             twitter_db = TwitterDB()
-            twitter_api = TwitterApi()
-
             tags_generator = twitter_db.find_tags_search()
             for search in tags_generator:
-                print search
-                contents_generator_tweet = twitter_api.find_hashtags( keys_words = search['keysWords'],
-                                                                      language = search['language'],
-                                                                      qtd_page = 1 )
-
-                twitter_iter = TwitterSpout.__check_is_new_twitter__( contents_generator_tweet, 
-                                                                      search['keysWords'], twitter_db )
-                print len(twitter_iter)
-                if len(twitter_iter) > 0:
-                    for twitter_json in twitter_iter:
-                        print twitter_json['text']
-
-                        #storm.emit( [ twitter_json ] )
-                        #time.sleep( 1 )
+  
+                tweet_iter = TwitterSpout.__check_is_new_twitter__( search, 
+                                                                    twitter_db )
+                if len(tweet_iter) > 0:
+                    for twitter_json in tweet_iter:
+                        storm.emit( [ twitter_json ] )
+                        time.sleep( 1 )
                 else:
-                    print 'mesmo tweet'
-                    #storm.emit( [ { 'twetter-status' : 'sem atualizacao' } ] )
-                    pass
-                print '\n\n'
+                    storm.emit( [ { 'twetter-status' : 'sem atualizacao', 'keys_words' : search['keysWords'] } ] )
                 time.sleep(60)
-              
-        except Exception as ex:
-               print ex
-               #storm.emit( [ { 'erro' : '%s' % ex} ] )
-               pass
 
-        time.sleep( 300 )
+        except Exception as ex:
+               storm.emit( [ { 'erro' : '%s' % ex} ] )
+
+        time.sleep( 6000 )
 
 if __name__ == '__main__':
     
     log = logging.getLogger('TwitterSpout')
     log.debug('TwitterSpout loading...')
-    #TwitterSpout().run()
-    TwitterSpout.nextTuple()
+    TwitterSpout().run()
+    #TwitterSpout.nextTuple()

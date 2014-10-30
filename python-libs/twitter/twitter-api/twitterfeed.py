@@ -1,11 +1,17 @@
-import twitter, json
+import twitter, json, sys
 from TwitterSearch import *
 
-USER_AUTH = { 'consumer_key' : 'WDm1ZyIL4JudaJLKw0JsWbjAR',
-              'consumer_secret' : 'Bqhn60ogrlLh36gxWPuvG5bn2bJGQy03RVAfnwSizUTsBgiuPb',
-              'access_token' : '2824866182-H03CoYXueJvdcrjGmkVHmzo0Ma9a3Zg1Y9aQ0yE',
-              'access_token_secret' : 'XgzE8arwulctpyciHsIGYUcCGpIWBAc3JfIlVUkqgbHLK'
-}
+def read_credential():
+    project_path = '/'.join( sys.path[0].split('/')[:-4] )
+
+    acces_key = {}
+    for line in open( project_path + '/keys/twitter_keys.csv'):
+        line = line.strip()
+        (key, value) = line.split('=')
+        acces_key[ key ] = value
+    return acces_key
+
+USER_AUTH = read_credential()
 
 class TwitterApi(object):
 
@@ -31,7 +37,10 @@ class TwitterApi(object):
             return self.__search_twitters__()
         except Exception as ex:
             raise Exception('origin: find_hashtags : %s ' % str(ex))
-              
+
+
+
+
 if __name__ == '__main__':
 
     twitter = TwitterApi()
