@@ -12,6 +12,10 @@ sudo service mongod start
 
 # depedencias para pyhton
 
+#pip
+sudo apt-get install python-setuptools python-dev build-essential
+sudo easy_install pip 
+sudo pip install --upgrade virtualenv 
 #twitter 
 pip install twitter
 pip install TwitterSearch
