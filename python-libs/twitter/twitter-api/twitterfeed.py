@@ -5,7 +5,8 @@ def read_credential():
     project_path = '/'.join( sys.path[0].split('/')[:-4] )
 
     acces_key = {}
-    for line in open( project_path + '/keys/twitter_keys.csv'):
+    for line in open( '../../../keys/twitter_keys.csv'):
+    #for line in open( project_path + '/keys/twitter_keys.csv'):
         line = line.strip()
         (key, value) = line.split('=')
         acces_key[ key ] = value
@@ -44,13 +45,14 @@ class TwitterApi(object):
 if __name__ == '__main__':
 
     twitter = TwitterApi()
-    hash_tags = ['unipam']
+    hash_tags = ['patosdeminas']
     generators = twitter.find_hashtags( hash_tags,'pt', 1 )
 
     valor = generators.next()
     while  valor:
         try :
             print valor['text']
+            print '\n'
             valor = generators.next()
         except StopIteration as e:
              break 

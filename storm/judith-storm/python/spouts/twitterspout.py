@@ -24,16 +24,13 @@ class TwitterSpout(storm.Spout):
             if twitter_db.is_new_tweet( search['keysWords'], content['text'] ) is True:
                 twitter_db.save_last_twitter( search['keysWords'], content['text'] )
                 while content:
-                    try:
-                        tweets.append( content )
-                        content = generator_tweet.next()
-                    except StopIteration as e:
-                       break
-        except Exception as ex:
-            raise Exception('origin: __check_is_new_twitter__ : %s ' % str(ex))
+                    tweets.append( content )
+                    content = generator_tweet.next() 
+        except StopIteration as ex:
+            pass
+
         return tweets
-
-
+        
     @classmethod
     def nextTuple(self):
         try:
