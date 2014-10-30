@@ -1,0 +1,15 @@
+
+Python Libs
+
+    --- twitter Api
+
+        # pip install twitter
+
+    --- boto api aws
+
+        # pip install boto
+
+    -- pyhton mongo
+
+       # pip install pymongo
+        
