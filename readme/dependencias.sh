@@ -10,8 +10,15 @@ sudo apt-get update
 sudo apt-get install -y mongodb-org
 sudo service mongod start
 
-# depedencias para pyhton
 
+
+# depedencias para JAVA
+#maven2
+sudo apt-get install maven2
+
+
+
+# depedencias para pyhton
 #pip
 sudo apt-get install python-setuptools python-dev build-essential
 sudo easy_install pip 
