@@ -23,7 +23,7 @@ class FilterPossibleStudents( storm.BasicBolt ):
         
         tweet = tupla.values[0]
         if tweet.has_key('erro') or tweet.has_key('twetter-status') :
-           storm.emit( [ tweet ] )
+           pass
         else:
             utils = TwitterJsonUtils()
             tweet_json = utils.remove_invalid_fields_from_json( tweet )

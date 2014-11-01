@@ -1,0 +1,7 @@
+--- Processa dados da midias sociais
+    -- json
+    -- salvar json no banco
+    -- separa se e estudante ou nao do unipam
+    -- criar o metadado no json que veio da web
+    -- salva os nomes para novas pesquisas
+    

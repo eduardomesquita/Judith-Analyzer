@@ -20,7 +20,7 @@ import java.util.Map;
 public class SaveTypeOfStudents extends ShellBolt implements IRichBolt {
 
     public SaveTypeOfStudents() {
-        super("python", ScriptsPyhton.getPathBouts() + "filterpossiblestudents.py");
+        super("python", ScriptsPyhton.getPathBouts() + "savetypeofstudents.py");
     }
 
     @Override

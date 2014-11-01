@@ -1,7 +1,6 @@
 import twitter, json, sys, platform
 from TwitterSearch import *
 
-
 def read_credential():
     
     if  platform.node() == 'eduardo-linux':
@@ -35,7 +34,7 @@ class TwitterApi(object):
             self.config.setLanguage( language )
             self.config.setCount( qtd_page )
             self.config.setIncludeEntities(False)
-            self.config.setResultType('recent')
+            self.config.setResultType('mixed')
             return self.__search_twitters__()
         except Exception as ex:
             raise Exception('origin: find_hashtags : %s ' % str(ex))
@@ -43,14 +42,13 @@ class TwitterApi(object):
 if __name__ == '__main__':
 
     twitter = TwitterApi()
-    hash_tags = ['patosdeminas']
-    generators = twitter.find_hashtags( hash_tags,'pt', 1 )
+    hash_tags = ['eduardomesq']
+    generators = twitter.find_hashtags( hash_tags,'pt', 100)
 
     valor = generators.next()
     while  valor:
         try :
             print valor['text']
-            print '\n'
             valor = generators.next()
         except StopIteration as e:
              break 

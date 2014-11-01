@@ -20,16 +20,31 @@ class ProcessaTwitters( storm.BasicBolt ):
     @classmethod
     def process(self, tupla):
         
-        tweet = tupla.values[0]
-        if tweet.has_key('erro') or tweet.has_key('twetter-status') :
-           storm.emit( [ tweet ] )
+        tuples = tupla.values[0]
+
+        if tuples.has_key('erro') or tuples.has_key('twetter-status') :
+           storm.emit( [ tuples ] )
         else:
+
+            tweet = tuples['json']
+            method = tuples['method']
+
             utils = TwitterJsonUtils()
             tweet_json = utils.remove_invalid_fields_from_json( tweet )
+
             try:
                 db = TwitterDB()
-                db.save_twitter( tweet_json )
-                storm.emit( [ tweet ] )
+                response = db.save_twitter( tweet_json, method)
+
+                if response == 'tweet_save':
+
+                    if method == 'by_tags':
+                        storm.emit( [ tweet ] )
+                    elif method == 'by_users':
+                        storm.emit( [ { 'twetter-status' : 'save_by_users' } ])
+                else:
+                    storm.emit( [ { 'erro' : 'duplicate' } ])
+
             except Exception as ex:
                 storm.emit( [ { 'erro' : '%s;%s'%(ex, tweet_json) } ] )
 
