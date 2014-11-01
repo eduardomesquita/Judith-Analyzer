@@ -10,12 +10,9 @@ sudo apt-get update
 sudo apt-get install -y mongodb-org
 sudo service mongod start
 
-
-
 # depedencias para JAVA
 #maven2
 sudo apt-get install maven2
-
 
 
 # depedencias para pyhton

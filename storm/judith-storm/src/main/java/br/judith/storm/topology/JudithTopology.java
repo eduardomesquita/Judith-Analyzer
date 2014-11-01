@@ -9,7 +9,9 @@ package br.judith.storm.topology;
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.topology.TopologyBuilder;
-import br.judith.storm.bouts.ProcessaTwitters;
+import br.judith.storm.bouts.FilterPossibleStudents;
+import br.judith.storm.bouts.SaveTwitters;
+import br.judith.storm.bouts.SaveTypeOfStudents;
 import br.judith.storm.spouts.TwitterSpout;
 
 /**
@@ -36,11 +38,15 @@ public class JudithTopology {
     public void start() {
        
         builder.setSpout("twiiter_feeds_spouts", new TwitterSpout(), 1);
-        builder.setBolt("processa_twitters", new ProcessaTwitters(), 1)
+        builder.setBolt("processa_twitters", new SaveTwitters())
                 .shuffleGrouping("twiiter_feeds_spouts");
-//        
-//        builder.setBolt("conexao_sebastiana", new ConexaoSebastiana(), 1)
-//                  .shuffleGrouping("processa_json");
+        
+        builder.setBolt("filter_possible_students_twitter", 
+                        new FilterPossibleStudents(), 1)
+                        .shuffleGrouping("processa_twitters");
+        
+        builder.setBolt("save_type_of_students", new SaveTypeOfStudents(), 1)
+                           .shuffleGrouping("filter_possible_students_twitter");
 //        
 //        builder.setBolt("processa_log", new ProcessaLog(), 1)
 //                      .shuffleGrouping("conexao_sebastiana");

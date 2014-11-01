@@ -6,9 +6,11 @@ python_libs_path = '/'.join( sys.path[0].split('/')[:-4] )
 sys.path.append( python_libs_path + '/python-libs/twitter/twitter-api/' )
 sys.path.append( python_libs_path + '/python-libs/connectors/mongo/' )
 sys.path.append( absolute_path + '/lib/')
+
 import storm_lib as storm
 from twitterfeed import TwitterApi
 from mongojudith import TwitterDB
+
 
 class TwitterSpout(storm.Spout):
 
@@ -41,8 +43,8 @@ class TwitterSpout(storm.Spout):
                 tweet_iter = TwitterSpout.__check_is_new_twitter__( search, 
                                                                     twitter_db )
                 if len(tweet_iter) > 0:
-                    for twitter_json in tweet_iter:
-                        storm.emit( [ twitter_json ] )
+                    for tweet_json in tweet_iter:
+                        storm.emit( [ tweet_json ] )
                         time.sleep( 1 )
                 else:
                     storm.emit( [ { 'twetter-status' : 'sem atualizacao', 'keys_words' : search['keysWords'] } ] )

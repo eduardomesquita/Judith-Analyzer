@@ -1,16 +1,17 @@
-import twitter, json, sys
+import twitter, json, sys, platform
 from TwitterSearch import *
 
-def read_credential():
-    project_path = '/'.join( sys.path[0].split('/')[:-4] )
 
-    acces_key = {}
-    #for line in open( '../../../keys/twitter_keys.csv'):
-    for line in open( project_path + '/keys/twitter_keys.csv'):
-        line = line.strip()
-        (key, value) = line.split('=')
-        acces_key[ key ] = value
-    return acces_key
+def read_credential():
+    
+    if  platform.node() == 'eduardo-linux':
+        PATH = '/home/eduardo/Projetos/TCC/keys/twitter_keys.csv'
+    else:
+        project_path = '/'.join( sys.path[0].split('/')[:-4] )
+        PATH = project_path + '../../../keys/twitter_keys.csv'
+
+    return dict( [  line.strip().split('=') 
+                            for line in open( PATH, 'r')] ) 
 
 USER_AUTH = read_credential()
 
@@ -38,9 +39,6 @@ class TwitterApi(object):
             return self.__search_twitters__()
         except Exception as ex:
             raise Exception('origin: find_hashtags : %s ' % str(ex))
-
-
-
 
 if __name__ == '__main__':
 

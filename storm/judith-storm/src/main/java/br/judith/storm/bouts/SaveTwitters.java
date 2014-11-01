@@ -17,15 +17,15 @@ import java.util.Map;
  *
  * @author eduardo
  */
-public class ProcessaTwitters extends ShellBolt implements IRichBolt {
+public class SaveTwitters extends ShellBolt implements IRichBolt {
 
-    public ProcessaTwitters() {
-        super("python", ScriptsPyhton.getPathBouts() + "processatwitter.py");
+    public SaveTwitters() {
+        super("python", ScriptsPyhton.getPathBouts() + "savetwitter.py");
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("json_status"));
+        declarer.declare(new Fields("json"));
     }
 
     @Override
