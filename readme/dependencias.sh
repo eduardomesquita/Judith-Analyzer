@@ -14,7 +14,6 @@ sudo service mongod start
 #maven2
 sudo apt-get install maven2
 
-
 # depedencias para pyhton
 #pip
 sudo apt-get install python-setuptools python-dev build-essential
@@ -27,4 +26,6 @@ pip install TwitterSearch
 pip install boto
 #pyhton conector mongo
 pip install pymongo
+#Redis 
+sudo pip install redis
 

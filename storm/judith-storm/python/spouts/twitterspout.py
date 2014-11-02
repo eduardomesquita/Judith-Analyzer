@@ -5,12 +5,13 @@ python_libs_path = '/'.join( sys.path[0].split('/')[:-4] )
 
 sys.path.append( python_libs_path + '/python-libs/twitter/twitter-api/' )
 sys.path.append( python_libs_path + '/python-libs/connectors/mongo/' )
+sys.path.append( python_libs_path + '/python-libs/connectors/redis/' )
 sys.path.append( absolute_path + '/lib/')
 
 import storm_lib as storm
 from twitterfeed import TwitterApi
 from mongojudith import TwitterDB
-
+from redisjudith import RedisJudith
 
 class TwitterSpout(storm.Spout):
 
@@ -20,7 +21,6 @@ class TwitterSpout(storm.Spout):
         tweets = []
         content = None
         twitter_api = TwitterApi()
-
         try:
             
             generator_tweet = twitter_api.find_hashtags( keys_words = search['keysWords'],
@@ -41,30 +41,57 @@ class TwitterSpout(storm.Spout):
         return tweets
 
     @classmethod
+    def __check_duplicate_tweet__(self, redis, user_name, start):
+        if start is True:
+            redis.delete(name=user_name)
+            return True
+        else:
+            status_redis = redis.get(name=user_name)
+            if status_redis is None:
+                return True
+            elif status_redis == 'DUPLICATE':
+                return False
+            else:
+                return True
+
+    @classmethod
     def __find_tweets__(self, twitter_db, method):
 
+        redis = RedisJudith()
         tags_generator = twitter_db.find_tags_search( method )
+
         for search in tags_generator:
-            tweet_iter = TwitterSpout.__check_is_new_twitter__( search, 
-                                                                twitter_db,
-                                                                method )
+            tweet_iter = TwitterSpout.__check_is_new_twitter__( search,twitter_db,
+                                                                method)
             if len(tweet_iter) > 0:
+                start = True
+
                 for tweet_json in tweet_iter:
-                    storm.emit( [ {'json': tweet_json,
-                                   'method': method }] )
-                    time.sleep(1)
+                    user_name = tweet_json['user']['screen_name']
+
+                    check_duplicate = self.__check_duplicate_tweet__( redis, user_name,
+                                                                      start)
+                    if check_duplicate is True:
+                        storm.emit( [ {'json': tweet_json,
+                                       'method': method }] )
+                        time.sleep(1)
+                        start = False
+                    else:
+                        storm.emit( [ { 'twetter-status' : 'duplicate',
+                                        'keys_words' : search['keysWords'] }] )
             else:
                 storm.emit( [ { 'twetter-status' : 'sem atualizacao',
                                 'keys_words' : search['keysWords'] }] )
             time.sleep(60)
+
 
     @classmethod
     def nextTuple(self):
         try:
 
             twitter_db = TwitterDB()
-            'by_tags'
-            for method in ['by_users']:
+            
+            for method in ['by_tags','by_users']:
                 tweet_iter = TwitterSpout.__find_tweets__( twitter_db, 
                                                            method )
         except Exception as ex:

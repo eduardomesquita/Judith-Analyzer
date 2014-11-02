@@ -5,11 +5,13 @@ python_libs_path = '/'.join( sys.path[0].split('/')[:-4] )
 
 sys.path.append( absolute_path + '/lib/')
 sys.path.append( python_libs_path + '/python-libs/connectors/mongo/' )
+sys.path.append( python_libs_path + '/python-libs/connectors/redis/' )
 sys.path.append( python_libs_path + '/python-libs/utils/' )
 
 import storm_lib as storm
 from mongojudith import TwitterDB
 from jsonutils import TwitterJsonUtils
+from redisjudith import RedisJudith
 
 class ProcessaTwitters( storm.BasicBolt ):
 
@@ -35,18 +37,23 @@ class ProcessaTwitters( storm.BasicBolt ):
             try:
                 db = TwitterDB()
                 response = db.save_twitter( tweet_json, method)
+                user_name = tweet['user']['screen_name']
 
                 if response == 'tweet_save':
-
                     if method == 'by_tags':
                         storm.emit( [ tweet ] )
                     elif method == 'by_users':
-                        storm.emit( [ { 'twetter-status' : 'save_by_users' } ])
+                        storm.emit( [ { 'twetter-status' : 'save_by_users: %s' % (user_name)} ])
                 else:
-                    storm.emit( [ { 'erro' : 'duplicate' } ])
+                    ''' salva usename para envitar testar duplicados ''' 
+                    redis = RedisJudith()
+                    redis.set(name=user_name, value='DUPLICATE' )
+                    storm.emit( [ { 'erro' : 'duplicate %s' % (user_name) } ])
 
             except Exception as ex:
                 storm.emit( [ { 'erro' : '%s;%s'%(ex, tweet_json) } ] )
+
+
 
 log = logging.getLogger('processaJson')
 log.debug('ProcessaJson loading')
