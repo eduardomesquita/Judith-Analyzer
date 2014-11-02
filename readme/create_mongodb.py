@@ -21,7 +21,4 @@ db.create_collection('twittersUsers')
 
 db['twittersTags'].ensure_index([('id_str',1), ('unique' , True)])
 db['twittersUsers'].ensure_index([('id_str',1), ('unique' , True)])
-db['searchUsers'].ensure_index([('user_name',1), ('unique' , True)])
-db['searchTags'].ensure_index([('user_name',1), ('unique' , True)])
-
 #db['searchTags'].insert({'keysWords' : [ 'unipam'], 'last_tweet_text' : '', 'language' : 'pt'})

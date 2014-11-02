@@ -102,8 +102,8 @@ class TwitterDB( MongoJudithAbstract ):
     def find_raw_data_users(self):
         tweeters = []
         for tweet in list( self.find( {},  collection_name = self.default_collection_name()) ):
-           new_tweet = {'text' : tweet['text'], 'user' : {'screen_name' : tweet['user']['screen_name']}}
-           tweeters.append( new_tweet )
+           #new_tweet = {'text' : tweet['text'], 'user' : {'screen_name' : tweet['user']['screen_name']}}
+           tweeters.append( tweet )
         return tweeters
 
     def update_possible_students_tags(self, id_str, status_students):

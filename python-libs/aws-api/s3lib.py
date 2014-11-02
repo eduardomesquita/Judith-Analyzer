@@ -8,7 +8,9 @@ import  sys, os
 
 path_python_libs =  '/'.join( sys.path[0].split('/')[:-1] )
 sys.path.append(path_python_libs + '/connectors/mongo/')
+sys.path.append(path_python_libs + '/analyzers/filter/')
 from mongojudith import TwitterDB
+from analyzerpossiblesstudents import AnalyzerPossibleStudentTwitter
 
 class S3Connector(object):
     def __init__(self, **kwargs):  
@@ -113,6 +115,24 @@ class TwitterS3Connector( S3Connector ):
         
 USER_AUTH = credentials_AWS.read_credential()
 
-tw  = TwitterS3Connector()
-tw.create_mapreduce_for_students_and_possible()
+#tw  = TwitterS3Connector()
+#tw.__create_file_upload__()
+
+
+if __name__ == '__main__':
+    twitter_db =TwitterDB()
+
+    for data in twitter_db.find_raw_data_users():
+        analyzer = AnalyzerPossibleStudentTwitter()
+        type_of_student = analyzer.filter(  data  )
+        if type_of_student:
+            user_name = data['user']['screen_name']
+            id_str = data['id_str']
+            print user_name, type_of_student
+            print 'atualizando..'
+            twitter_db.update_possible_students_tags(id_str=id_str,
+                                                        status_students=type_of_student)
+            print twitter_db.save_possible_students_tags(user_name=user_name)
+            print 'ok'
+
 
