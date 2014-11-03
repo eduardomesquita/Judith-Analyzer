@@ -104,20 +104,12 @@ class TwitterDB( MongoJudithAbstract ):
            tweeters.append( tweet )
         return tweeters
 
-    def insert_judith_metadata(self, id_str, status_students):
-        self.update({'id_str': id_str}, 
-                    {'judith-metadata': {'type_of_student' :status_students }},
-                    self.default_collection_name(), upsert = False)
 
-    def save_tweet_by_username(self, user_name):
-        try:
-            json_save = {'language' : 'pt', 'keysWords' : [ user_name ], 'last_tweet_text' : '' }
-            self.save( json_save = json_save, collection_name = self.__default_collection_search_users__() )
-            return 'user_tag_save'
-        except pymongo.errors.DuplicateKeyError as err:
-            return 'user_tag_save'
-        except Exception as ex:
-            raise Exception(ex)
+    def save_key_words_by_username(self, user_name):
+        json_save = {'language' : 'pt', 'keysWords' : [ user_name ], 'last_tweet_text' : '' }
+        self.save( json_save = json_save, collection_name = self.__default_collection_search_users__() )
+        return 'tweet_save'
+    
 
 
 if __name__ == '__main__':

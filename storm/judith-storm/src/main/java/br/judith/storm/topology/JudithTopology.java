@@ -9,9 +9,9 @@ package br.judith.storm.topology;
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.topology.TopologyBuilder;
-import br.judith.storm.bouts.FilterPossibleStudents;
+import br.judith.storm.bouts.SaveUsersTwitters;
 import br.judith.storm.bouts.SaveTwitters;
-import br.judith.storm.bouts.SaveTypeOfStudents;
+import br.judith.storm.bouts.FilterTwitter;
 import br.judith.storm.spouts.TwitterSpout;
 
 /**
@@ -37,21 +37,21 @@ public class JudithTopology {
 
     public void start() {
        
-        builder.setSpout("twiiter_feeds_spouts", new TwitterSpout(), 1);
-        builder.setBolt("processa_twitters", new SaveTwitters())
-                .shuffleGrouping("twiiter_feeds_spouts");
+        builder.setSpout("EMIT_TWEET", new TwitterSpout(), 1);
         
-        builder.setBolt("filter_possible_students_twitter", 
-                        new FilterPossibleStudents(), 1)
-                        .shuffleGrouping("processa_twitters");
+        builder.setBolt("FILTER_TWEET", new  FilterTwitter())
+                        .shuffleGrouping("EMIT_TWEET");
         
-        builder.setBolt("save_type_of_students", new SaveTypeOfStudents(), 1)
-                           .shuffleGrouping("filter_possible_students_twitter");
+        builder.setBolt("SAVE_TWEET",  new SaveTwitters(), 1)
+                        .shuffleGrouping("FILTER_TWEET");
+        
+        builder.setBolt("SAVE_USERS_TWEET", new SaveUsersTwitters(), 1)
+                           .shuffleGrouping("SAVE_TWEET");
 //        
 //        builder.setBolt("processa_log", new ProcessaLog(), 1)
 //                      .shuffleGrouping("conexao_sebastiana");
         
-        cluster.submitTopology("judith-strom", config,
+        cluster.submitTopology("JUDITH-TOPOLOGY", config,
                 builder.createTopology());
     }
 

@@ -95,7 +95,7 @@ class TwitterSpout(storm.Spout):
                 tweet_iter = TwitterSpout.__find_tweets__( twitter_db, 
                                                            method )
         except Exception as ex:
-               storm.emit( [ { 'erro' : '%s' % ex} ] )
+               storm.emit( [ { 'erro' : '%s' % ex , 'CLASS' : 'FilterTwitter'}] )
         
         time.sleep( 6000 )
 

@@ -17,10 +17,10 @@ import java.util.Map;
  *
  * @author eduardo
  */
-public class FilterPossibleStudents extends ShellBolt implements IRichBolt {
+public class FilterTwitter extends ShellBolt implements IRichBolt {
 
-    public FilterPossibleStudents() {
-        super("python", ScriptsPyhton.getPathBouts() + "filterpossiblestudents.py");
+    public FilterTwitter() {
+        super("python", ScriptsPyhton.getPathBouts() + "filtertwitter.py");
     }
 
     @Override

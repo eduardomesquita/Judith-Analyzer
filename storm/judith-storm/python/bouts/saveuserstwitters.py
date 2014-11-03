@@ -10,9 +10,10 @@ sys.path.append( python_libs_path + '/python-libs/connectors/mongo/' )
 import storm_lib as storm
 from jsonutils import TwitterJsonUtils
 from mongojudith import TwitterDB
+import pymongo
 
 
-class SaveTypeOfStudents( storm.BasicBolt ):
+class SaveUsersTwitters( storm.BasicBolt ):
 
     @classmethod
     def declareOutputFields(cls):
@@ -22,30 +23,22 @@ class SaveTypeOfStudents( storm.BasicBolt ):
     def process(self, tupla):
         
         tweet = tupla.values[0]
-       
         if tweet.has_key('erro') or tweet.has_key('twetter-status') :
-           pass
+           storm.emit( [ tweet ] )
         else:
             utils = TwitterJsonUtils()
-            tweet_json = utils.remove_invalid_fields_from_json( tweet )
+            tweet_json = utils.remove_invalid_fields_from_json( tweet['json'] )
 
             try:
-
+               
                 db = TwitterDB()
-
-                user_name = tweet_json['json']['user']['screen_name']
-                id_str = tweet_json['json']['id_str']
-                reponse = tweet_json['type_of_student']
-
-                status = db.save_tweet_by_username(user_name=user_name)
-                db.insert_judith_metadata(id_str=id_str, status_students=reponse)
-
-                storm.emit([{'status': status }])
-
+                user_name = tweet_json['user']['screen_name']
+                response = db.save_key_words_by_username( user_name  )
+                storm.emit( [ {'twetter-status-urser' : user_name} ] )
+   
             except Exception as ex:
-                storm.emit( [ { 'erro' : '%s;%s'%(ex, tweet_json) } ] )
-            
+               storm.emit( [ { 'erro' : '%s;%s'%(ex, tweet_json), 'CLASS' : 'SaveUsersTwitters' } ] )
 
 log = logging.getLogger('processaJson')
 log.debug('ProcessaJson loading')
-SaveTypeOfStudents().run()
+SaveUsersTwitters().run()

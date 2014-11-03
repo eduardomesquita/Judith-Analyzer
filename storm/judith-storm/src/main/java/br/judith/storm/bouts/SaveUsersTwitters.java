@@ -17,10 +17,10 @@ import java.util.Map;
  *
  * @author eduardo
  */
-public class SaveTypeOfStudents extends ShellBolt implements IRichBolt {
+public class SaveUsersTwitters extends ShellBolt implements IRichBolt {
 
-    public SaveTypeOfStudents() {
-        super("python", ScriptsPyhton.getPathBouts() + "savetypeofstudents.py");
+    public SaveUsersTwitters() {
+        super("python", ScriptsPyhton.getPathBouts() + "saveuserstwitters.py");
     }
 
     @Override

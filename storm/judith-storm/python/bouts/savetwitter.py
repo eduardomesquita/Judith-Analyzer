@@ -12,6 +12,7 @@ import storm_lib as storm
 from mongojudith import TwitterDB
 from jsonutils import TwitterJsonUtils
 from redisjudith import RedisJudith
+import pymongo
 
 class ProcessaTwitters( storm.BasicBolt ):
 
@@ -33,26 +34,25 @@ class ProcessaTwitters( storm.BasicBolt ):
 
             utils = TwitterJsonUtils()
             tweet_json = utils.remove_invalid_fields_from_json( tweet )
-
             try:
+
                 db = TwitterDB()
-                response = db.save_twitter( tweet_json, method)
-                user_name = tweet['user']['screen_name']
-
-                if response == 'tweet_save':
-                    if method == 'by_tags':
-                        storm.emit( [ tweet ] )
-                    elif method == 'by_users':
-                        storm.emit( [ { 'twetter-status' : 'save_by_users: %s' % (user_name)} ])
+                response = db.save_twitter( tweet_json, method )
+                if method == 'by_tags':
+                    storm.emit( [ {'json': tweet, 'response' : response } ] )
                 else:
-                    ''' salva usename para envitar testar duplicados ''' 
-                    redis = RedisJudith()
-                    redis.set(name=user_name, value='DUPLICATE' )
-                    storm.emit( [ { 'erro' : 'duplicate %s' % (user_name) } ])
+                    storm.emit( [ {'twetter-status': 'BY_USER_NAO_SALVO', 'response' : response } ] )
 
+                  
+            except pymongo.errors.DuplicateKeyError as err:
+                ''' salva usename para envitar testar duplicados ''' 
+                user_name = tweet['user_name']['screen_name']
+                redis = RedisJudith()
+                redis.set(name=user_name, value='DUPLICATE' )
+                storm.emit( [ { 'erro' : 'duplicate %s' % (user_name) } ])
+   
             except Exception as ex:
-                storm.emit( [ { 'erro' : '%s;%s'%(ex, tweet_json) } ] )
-
+                storm.emit( [ { 'erro' : '%s;%s'%(ex, tweet_json), 'CLASS' : 'ProcessaTwitters'} ] )
 
 
 log = logging.getLogger('processaJson')
