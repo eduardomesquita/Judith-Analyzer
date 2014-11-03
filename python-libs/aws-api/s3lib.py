@@ -130,9 +130,6 @@ if __name__ == '__main__':
             id_str = data['id_str']
             print user_name, type_of_student
             print 'atualizando..'
-            twitter_db.update_possible_students_tags(id_str=id_str,
-                                                        status_students=type_of_student)
-            print twitter_db.save_possible_students_tags(user_name=user_name)
+            twitter_db.insert_judith_metadata(id_str=id_str, status_students=type_of_student)
+            print twitter_db.save_tweet_by_username(user_name=user_name)
             print 'ok'
-
-
