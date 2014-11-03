@@ -64,8 +64,6 @@ class TwitterDB( MongoJudithAbstract ):
             return self.__default_collection_tweet_users__()
 
 
-
-
     def find_tags_search(self, method):
         collection_name = self.__get_collections_search_by_method__(method)  
         for tags in self.find({}, collection_name ):
@@ -106,12 +104,12 @@ class TwitterDB( MongoJudithAbstract ):
            tweeters.append( tweet )
         return tweeters
 
-    def update_possible_students_tags(self, id_str, status_students):
+    def insert_judith_metadata(self, id_str, status_students):
         self.update({'id_str': id_str}, 
                     {'judith-metadata': {'type_of_student' :status_students }},
                     self.default_collection_name(), upsert = False)
 
-    def save_possible_students_tags(self, user_name):
+    def save_tweet_by_username(self, user_name):
         try:
             json_save = {'language' : 'pt', 'keysWords' : [ user_name ], 'last_tweet_text' : '' }
             self.save( json_save = json_save, collection_name = self.__default_collection_search_users__() )

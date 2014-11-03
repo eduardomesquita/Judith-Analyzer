@@ -7,7 +7,7 @@ def read_credential():
         PATH = '/home/eduardo/Projetos/TCC/keys/twitter_keys.csv'
     else:
         project_path = '/'.join( sys.path[0].split('/')[:-4] )
-        PATH = project_path + '../../../keys/twitter_keys.csv'
+        PATH = project_path + '/keys/twitter_keys.csv'
 
     return dict( [  line.strip().split('=') 
                             for line in open( PATH, 'r')] ) 

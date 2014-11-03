@@ -19,11 +19,6 @@ class SaveTypeOfStudents( storm.BasicBolt ):
         return ['json']
 
     @classmethod
-    def save_method_factory(self, tweet_json):
-        if tweet_json['method_name'] == 'twitter':
-            return TwitterDB()
-
-    @classmethod
     def process(self, tupla):
         
         tweet = tupla.values[0]
@@ -36,15 +31,15 @@ class SaveTypeOfStudents( storm.BasicBolt ):
 
             try:
 
-                judith_db = SaveTypeOfStudents.save_method_factory( tweet_json )
+                db = TwitterDB()
 
                 user_name = tweet_json['json']['user']['screen_name']
                 id_str = tweet_json['json']['id_str']
-                type_of_student = tweet_json['type_of_student']
+                reponse = tweet_json['type_of_student']
 
-                status = judith_db.save_possible_students_tags(user_name=user_name)
-                judith_db.update_possible_students_tags(id_str=id_str,
-                                                        status_students=type_of_student)
+                status = db.save_tweet_by_username(user_name=user_name)
+                db.insert_judith_metadata(id_str=id_str, status_students=reponse)
+
                 storm.emit([{'status': status }])
 
             except Exception as ex:
