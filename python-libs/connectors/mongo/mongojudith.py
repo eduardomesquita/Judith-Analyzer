@@ -97,9 +97,9 @@ class TwitterDB( MongoJudithAbstract ):
         except pymongo.errors.DuplicateKeyError as err:
             return err
 
-    def find_raw_data_users(self):
+    def find_raw_data_users(self, collection_name):
         tweeters = []
-        for tweet in list( self.find( {},  collection_name = self.default_collection_name()) ):
+        for tweet in list( self.find( {},  collection_name = collection_name) ):
            #new_tweet = {'text' : tweet['text'], 'user' : {'screen_name' : tweet['user']['screen_name']}}
            tweeters.append( tweet )
         return tweeters
