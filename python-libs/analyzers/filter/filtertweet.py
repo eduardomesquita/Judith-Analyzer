@@ -37,13 +37,22 @@ if __name__ == '__main__':
     
     twitter_db =TwitterDB()
 
+    h = {}
     for data in twitter_db.find_raw_data_users():
         
-        f = FilterTweet()
-        if f.filter(  data ):
-            try:
-                user_name = data['user']['screen_name']
-                response = twitter_db.save_key_words_by_username( user_name  )
-                print response
-            except:
-                print 'ERRO'
+        if h.has_key(data['id_str']):
+            h[ data['id_str'] ] += 1
+        else:
+            h[ data['id_str'] ] = 1
+        #f = FilterTweet()
+        #if f.filter(  data ):
+        #    try:
+        #        user_name = data['user']['screen_name']
+        #        response = twitter_db.save_key_words_by_username( user_name  )
+        #        print response
+        #    except:
+        #        print 'ERRO'
+
+    for i in h.keys():
+        if h[ i ] > 1:
+            print h[ i ]
