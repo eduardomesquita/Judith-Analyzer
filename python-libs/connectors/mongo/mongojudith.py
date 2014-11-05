@@ -98,12 +98,8 @@ class TwitterDB( MongoJudithAbstract ):
             return err
 
     def find_raw_data_users(self, collection_name):
-        tweeters = []
-        for tweet in list( self.find( {},  collection_name = collection_name) ):
-           #new_tweet = {'text' : tweet['text'], 'user' : {'screen_name' : tweet['user']['screen_name']}}
-           tweeters.append( tweet )
-        return tweeters
-
+        yield list( self.find( {},  collection_name = collection_name) ):
+        
 
     def save_key_words_by_username(self, user_name):
         json_save = {'language' : 'pt', 'keysWords' : [ user_name ], 'last_tweet_text' : '' }
