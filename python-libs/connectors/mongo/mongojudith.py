@@ -97,8 +97,8 @@ class TwitterDB( MongoJudithAbstract ):
         except pymongo.errors.DuplicateKeyError as err:
             return err
 
-    def find_raw_data_users(self, collection_name):
-        yield list( self.find( {},  collection_name = collection_name) ):
+    def find_raw_data_users(self, collection_name, skip, limit):
+        return self.find( {},  collection_name = collection_name).skip( skip ).limit( limit )
         
 
     def save_key_words_by_username(self, user_name):

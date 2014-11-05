@@ -38,12 +38,20 @@ if __name__ == '__main__':
     twitter_db =TwitterDB()
 
     h = {}
-    for data in twitter_db.find_raw_data_users(  'twittersUsers' ):
-        
-        if h.has_key(data['id_str']):
-            h[ data['id_str'] ] += 1
-        else:
-            h[ data['id_str'] ] = 1
+
+    maximo = 150000
+    limit = 0
+    skip = 0
+
+    for limit in range(0, maximo, 10000 ):
+  
+        a = twitter_db.find_raw_data_users(  'twittersUsers', limit, skip )
+        skip = limit
+        for data in a:
+            if h.has_key(data['id_str']):
+                h[ data['id_str'] ] += 1
+            else:
+                h[ data['id_str'] ] = 1
         #f = FilterTweet()
         #if f.filter(  data ):
         #    try:
