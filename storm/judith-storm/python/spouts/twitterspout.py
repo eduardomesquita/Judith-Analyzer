@@ -29,7 +29,7 @@ class TwitterSpout(storm.Spout):
             content = generator_tweet.next()
 
             if twitter_db.is_new_tweet( search['keysWords'], content['text'], method ) is True:
-                twitter_db.save_last_twitter( search['keysWords'], content['text'], method)
+                twitter_db.update_last_twitter( search['keysWords'], content['text'], method)
 
                 while content:
                     tweets.append( content )

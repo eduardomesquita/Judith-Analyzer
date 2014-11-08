@@ -30,7 +30,11 @@ class MongoJudithAbstract(object):
         self.mongo_db[ collection_name ].update( key, {'$set': values}, upsert = upsert)
 
     def find(self, json_find, collection_name):
-        return self.mongo_db[ collection_name ].find( json_find )
+        return self.mongo_db[ collection_name ].find( json_find)
+
+    def count(self, json_find, collection_name):
+        return self.mongo_db[ collection_name ].find( json_find ).count()
+
 
 
 
@@ -79,15 +83,21 @@ class TwitterDB( MongoJudithAbstract ):
         else:
             return True
 
-    def save_last_twitter(self, keys_words, text, method):
+    def update_last_twitter(self, keys_words, text, method):
         collection_name = self.__get_collections_search_by_method__(method)  
         self.update( key = {'keysWords' : keys_words },
                      values = {'last_tweet_text' :  text },
                      collection_name = collection_name, upsert = False)
 
+    def update_twitter_uploads_s3(self, id_str, collection_name):
+        try:
+            self.update( key = {'id_str' : id_str },
+                         values = {'judith-metadata.status' : 'upload_s3' },
+                         collection_name = collection_name, upsert = False)
+        except:
+            raise Exception()
 
-
-
+            
     def save_twitter(self, json_twitter, method):
         collection_name = self.__get_collections_tweet_by_method__( method )
         try:
@@ -99,7 +109,6 @@ class TwitterDB( MongoJudithAbstract ):
 
     def find_raw_data_users(self, collection_name, skip, limit):
         return self.find( {},  collection_name = collection_name).skip( skip ).limit( limit )
-        
 
     def save_key_words_by_username(self, user_name):
         json_save = {'language' : 'pt', 'keysWords' : [ user_name ], 'last_tweet_text' : '' }

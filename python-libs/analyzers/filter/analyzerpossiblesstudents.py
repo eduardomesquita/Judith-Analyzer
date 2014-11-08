@@ -10,13 +10,12 @@ class AnalyzerPossibleStudentAbstract( object ):
             return normalize('NFKD', txt.decode(codif)).encode('ASCII','ignore')
         except Exception as ex:
             return txt
-
+    
     def filter(self, json_analyzer):
         raise NotImplementedError()
-
+    
     def get_name(self):
        raise NotImplementedError()
-
 
 class AnalyzerPossibleStudentTwitter( AnalyzerPossibleStudentAbstract ):
 
@@ -70,9 +69,10 @@ class AnalyzerPossibleStudentTwitter( AnalyzerPossibleStudentAbstract ):
                             }
 
 
-
         invalid_users = ['patoshoje', 'CDLPATOS', 'patos_agora', 'portaltopgyn',
-                            'oqrola', 'COPASA115', 'g1tvintegracao', 'UNIPAMNET', ]  
+                            'oqrola', 'COPASA115', 'g1tvintegracao', 'UNIPAMNET','DURANDU85065556'
+                            'marl3nemarta', 'HeybetaXis', 'bittersteel01', 'lauradiniz9655', 'DanielleC20013', 
+                            'Guthiele','Novasdepaz_87fm', 'radiohoje']
 
         setattr(self,'possible_student_dictionary', possible_student_dictionary)
         setattr(self,'student_dictionary', student_dictionary)
@@ -99,8 +99,6 @@ class AnalyzerPossibleStudentTwitter( AnalyzerPossibleStudentAbstract ):
         text = json_analyzer['text']
         user_name = json_analyzer['user']['screen_name']
 
-        
-
         if user_name not in self.invalid_users:
             words_encondig  = [ self.clear_coding( word ) 
                         for word in text.split(' ') ]
@@ -118,6 +116,7 @@ class AnalyzerPossibleStudentTwitter( AnalyzerPossibleStudentAbstract ):
             elif points_student > 3:
                 return 'ESTUDANTE'
         return None
+
 
 if __name__ == '__main__':
    import sys
