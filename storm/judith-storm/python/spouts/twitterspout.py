@@ -94,11 +94,10 @@ class TwitterSpout(storm.Spout):
             for method in ['by_tags','by_users']:
                 tweet_iter = TwitterSpout.__find_tweets__( twitter_db, 
                                                            method )
+            time.sleep( 6000 )
         except Exception as ex:
-               storm.emit( [ { 'erro' : '%s' % ex , 'CLASS' : 'FilterTwitter'}] )
-        
-        time.sleep( 6000 )
-
+            storm.emit( [ { 'erro' : '%s' % ex , 'CLASS' : 'FilterTwitter'}] )
+            time.sleep( 60 )
 
 if __name__ == '__main__':
     

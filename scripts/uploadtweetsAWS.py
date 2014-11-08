@@ -13,14 +13,14 @@ class AwsS3Upload(object):
 
     def __init__(self):
         setattr(self, 'twitter_db', TwitterDB())
-        setattr(self,'bucket_name', 'judith-project')
+        setattr(self,'bucket_name', self.__get_aws_params__('aws_bucket_name'))
         setattr(self, 'file_name', 'raw_data_twitter')
         setattr(self, 'path_file', (self.__get_folder_name__() + self.file_name))
         setattr(self, 'collections_names', ['twittersUsers', 'twittersTags'] )
 
-    def __get_aws_dir__(self):
+    def __get_aws_params__(self, key):
         try:
-            return list( self.twitter_db.get_config('path_aws_uploads') )[0]['value']
+            return list( self.twitter_db.get_config(key) )[0]['value']
         except:
             raise Exception()
 
@@ -30,7 +30,7 @@ class AwsS3Upload(object):
         return data_atual.replace(' ', '-').replace(':', '-')
 
     def __get_folder_name__(self):
-        path_folder = self.__get_aws_dir__()
+        path_folder = self.__get_aws_params__( 'path_aws_uploads' )
         folder_name = self.__now__()
         os.mkdir( path_folder +  folder_name + '/') 
         return path_folder+folder_name+'/'
@@ -82,8 +82,6 @@ class AwsS3Upload(object):
                         file_name = self.__now__()+'/'+ self.file_name,
                         path_file=self.path_file )
         print 'FIM'
-
-
 
 
 if __name__ == '__main__':
