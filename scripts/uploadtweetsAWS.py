@@ -1,5 +1,5 @@
-import sys, json, datetime, os
-from datetime import *
+import sys, json, datetime, os, time
+from datetime import datetime
 
 path_python_libs =  '/'.join( sys.path[0].split('/')[:-1] )
 sys.path.append(path_python_libs + '/python-libs/connectors/mongo/')
@@ -7,6 +7,22 @@ sys.path.append(path_python_libs + '/python-libs/aws-api/')
 
 from mongojudith import TwitterDB
 from s3lib import S3Connector
+
+fmt = '%Y-%m-%d %H:%M:%S'
+
+def current_time():
+    return datetime.now().strftime(fmt)
+
+def diff_data_minute( d1 ):
+
+    d2 = current_time()
+    d1 = datetime.strptime(d1, fmt)
+    d2 = datetime.strptime(d2, fmt)
+
+    d1_ts = time.mktime(d1.timetuple())
+    d2_ts = time.mktime(d2.timetuple())
+    return int(d2_ts-d1_ts) / 60
+
 
 
 class AwsS3Upload(object):
@@ -17,6 +33,8 @@ class AwsS3Upload(object):
         setattr(self, 'file_name', 'raw_data_twitter')
         setattr(self, 'path_file', (self.__get_folder_name__() + self.file_name))
         setattr(self, 'collections_names', ['twittersUsers', 'twittersTags'] )
+        setattr(self, 'count', 0 )
+        setattr(self, 'data_start', current_time())
 
     def __get_aws_params__(self, key):
         try:
@@ -25,9 +43,8 @@ class AwsS3Upload(object):
             raise Exception()
 
     def __now__(self):
-        fmt = "%Y-%m-%d %H:%M:%S"
-        data_atual =  datetime.now().strftime( fmt )
-        return data_atual.replace(' ', '-').replace(':', '-')
+        return current_time().replace(' ', '-').replace(':', '-')
+
 
     def __get_folder_name__(self):
         path_folder = self.__get_aws_params__( 'path_aws_uploads' )
@@ -67,6 +84,7 @@ class AwsS3Upload(object):
                    json_formatted = json.dumps( tweet_json )
                    self.__write_file__( self.path_file, json_formatted )
                    self.update_document( tweet_json['id_str'], collection_name )
+                   self.count += 1
 
                 except Exception as e:
                    print 'fail: %s' % e
@@ -81,6 +99,9 @@ class AwsS3Upload(object):
         s3.upload_file( bucket_name=self.bucket_name,
                         file_name = self.__now__()+'/'+ self.file_name,
                         path_file=self.path_file )
+    
+        print '\n\nDocumento importados %s' % self.count
+        print 'Em aproximadamente %s minutos' % diff_data_minute( self.data_start )
         print 'FIM'
 
 
