@@ -46,6 +46,14 @@ class AwsS3Upload(object):
         return current_time().replace(' ', '-').replace(':', '-')
 
 
+    def __save_s3_upload__(self, file_name, s3_path_name):
+        self.twitter_db.save_jobs_upload_S3( path_s3_name=s3_path_name,
+                                             count=self.count,
+                                             date=current_time(),
+                                             status='NAO_PROCESSADO',
+                                             upload_time = diff_data_minute( self.data_start ))
+
+
     def __get_folder_name__(self):
         path_folder = self.__get_aws_params__( 'path_aws_uploads' )
         folder_name = self.__now__()
@@ -95,13 +103,18 @@ class AwsS3Upload(object):
             print 'pesquisando collection name %s' % name
             self.__create_file__( name )
             
+        file_name =  self.__now__()+'/'+ self.file_name
         s3 = S3Connector()
         s3.upload_file( bucket_name=self.bucket_name,
-                        file_name = self.__now__()+'/'+ self.file_name,
+                        file_name = file_name,
                         path_file=self.path_file )
-    
-        print '\n\nDocumento importados %s' % self.count
-        print 'Em aproximadamente %s minutos' % diff_data_minute( self.data_start )
+        
+        s3_path_name = self.bucket_name+'/'+file_name 
+        self.__save_s3_upload__(file_name, s3_path_name)
+
+        print '\n\nDocumento importados: %s' % self.count
+        print 'Em aproximadamente: %s minutos' % diff_data_minute( self.data_start )
+        print 'S3: %s ' % ( self.bucket_name+'/'+file_name )
         print 'FIM'
 
 

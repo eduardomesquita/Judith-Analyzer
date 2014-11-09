@@ -1,4 +1,4 @@
-import platform
+import platform, sys
 
 def read_credential():
 
@@ -8,5 +8,4 @@ def read_credential():
         project_path = '/'.join( sys.path[0].split('/')[:-4] )
         PATH = project_path + '../../../keys/aws_keys.csv'
     return dict( [  line.strip().split('=') 
-                            for line in open( PATH, 'r')] ) 
-    
+                            for line in open( PATH, 'r')] )

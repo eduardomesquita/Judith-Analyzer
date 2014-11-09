@@ -23,8 +23,13 @@ class MongoJudithAbstract(object):
         db =  self.client[ self.default_db_config() ]
         return db[ self.default_parameters_config() ].find({'key' : key_name})
 
-    def save(self, json_save, collection_name):
-        self.mongo_db[ collection_name ].save( json_save )
+    def save(self, json_save, collection_name, db = None):
+        if not db:
+            self.mongo_db[ collection_name ].save( json_save )
+        else:
+            mongo_db  = self.client[ db ]
+            mongo_db[ collection_name ].save( json_save )
+
 
     def update(self, key, values, collection_name, upsert = True):
         self.mongo_db[ collection_name ].update( key, {'$set': values}, upsert = upsert)
@@ -34,7 +39,6 @@ class MongoJudithAbstract(object):
 
     def count(self, json_find, collection_name):
         return self.mongo_db[ collection_name ].find( json_find ).count()
-
 
 
 
@@ -89,6 +93,9 @@ class TwitterDB( MongoJudithAbstract ):
                      values = {'last_tweet_text' :  text },
                      collection_name = collection_name, upsert = False)
 
+
+
+
     def update_twitter_uploads_s3(self, id_str, collection_name):
         try:
             self.update( key = {'id_str' : id_str },
@@ -97,7 +104,17 @@ class TwitterDB( MongoJudithAbstract ):
         except:
             raise Exception()
 
-            
+    def save_jobs_upload_S3(self, path_s3_name, count, date, status, upload_time):
+        db_config = self.default_db_config()
+
+        json_save = {'path_s3_name' : path_s3_name, 'count_tweet' : count,
+                    'create_at': date, 'status' : status, 'upload_time' :upload_time }
+
+        self.save( json_save = json_save, collection_name = 'uploads_s3',
+                   db=db_config )
+
+
+
     def save_twitter(self, json_twitter, method):
         collection_name = self.__get_collections_tweet_by_method__( method )
         try:
