@@ -34,6 +34,17 @@ class S3Connector(object):
         k.key = file_name
         k.set_contents_from_filename(path_file)
 
+    def list_content_of_bucket(self, bucket_name):
+        bucket = self.get_bucket( bucket_name )
+        bucket_list = bucket.list()
+        contents = []
+        for l in bucket_list:
+            contents.append( l )
+
+        return contents
+            
+        
+           
 
         
 

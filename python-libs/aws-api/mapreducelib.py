@@ -29,16 +29,15 @@ class AwsMapReduce(object):
           
           return state
 
-    def create(self, map_reduce_name, file_input, file_output, log_file, n_instance = 1):
+    def create(self, name, input_file, output_file, log_file, mapper, n_instance = 1):
         conn = self.__connect_instance_emr__()
-        #mapper='s3n://mywordcounteduardo/mywordcount.py',
-        step = StreamingStep(  name=map_reduce_name,
-                               mapper='s3n://judith-project/scripts/v3/studentsfiltermapreduce.py',
+        step = StreamingStep(  name=name,
+                               mapper=mapper,
                                reducer='aggregate',
-                               input=file_input,
-                               output=file_output )
+                               input=input_file,
+                               output=output_file )
         
-        job_id = conn.run_jobflow( name=map_reduce_name + '-jobflow',
+        job_id = conn.run_jobflow( name=name + '-jobflow',
                                    log_uri=log_file,
                                    steps=[step],
                                    num_instances= n_instance )
@@ -51,7 +50,10 @@ class AwsMapReduce(object):
                                                 conn = conn )
 
         print "job state = %s - job id = %s " %  ( state, job_id )
+        return state, job_id
 
-
-
+        
 USER_AUTH = credentials_AWS.read_credential()
+
+if __name__ == '__main__':
+  AwsMapReduce().create('teste', 's3n://judith-project/raw_data/2014-11-09-20-36-20/raw_data_twitter', 's3n://judith-project/saida/', 's3n://judith-project/logs/')
