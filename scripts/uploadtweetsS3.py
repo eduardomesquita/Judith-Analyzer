@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from unicodedata import normalize
-
 import sys, json, datetime, os, time
 from datetime import datetime
 
@@ -13,39 +10,42 @@ from twitterdb import TwitterDB
 from configdb import ConfigDB
 from s3lib import S3Connector
 import dateutils as date_utils
-
+import encodingutils as econding_utils
 
 class AwsS3Upload(object):
 
     def __init__(self):
         setattr(self, 'twitter_db', TwitterDB())
         setattr(self, 'config_db', ConfigDB())
+        setattr(self, 'current_time', date_utils.current_time().replace(' ', '-').replace(':', '-'))
         setattr(self,'bucket_name', self.__get_aws_params__('aws_bucket_name'))
         setattr(self, 'file_name', 'raw_data_twitter')
         setattr(self, 'path_file', (self.__get_folder_name__() + self.file_name))
         setattr(self, 'collections_names', ['twittersUsers', 'twittersTags'] )
         setattr(self, 'count', 0 )
-        setattr(self, 'data_start', date_utils.current_time())
-        self.__now__()
+        setattr(self, 'start', date_utils.current_time())
+       
 
     def __get_aws_params__(self, key):
         try:
             return list( self.config_db.get_config(key) )[0]['value']
         except:
             raise Exception()
-
-    def __now__(self):
-        setattr(self, 'date', date_utils.current_time().replace(' ', '-').replace(':', '-'))
-
+            
     def __save_s3_upload__(self, file_name, s3_path_name):
-        self.config_db.save_jobs_upload_S3( path_s3_name=s3_path_name,
-                                            count=self.count,
-                                            date=self.date,
-                                            upload_time = diff_data_minute( self.data_start ))
+
+        data = { 'pathS3Name' : s3_path_name,
+                 'counttweet' : self.count,
+                 'create_at': self.current_time,
+                 'runTimeMminutes' : date_utils.diff_data_minute(self.start), 
+                 'name' : 'all_data',
+                 'scriptsReader':[] }
+
+        self.config_db.save_jobs_upload_S3( **data )
 
     def __get_folder_name__(self):
         path_folder = self.__get_aws_params__( 'path_aws_uploads' )
-        folder_name = self.date
+        folder_name = self.current_time
         os.mkdir( path_folder +  folder_name + '/') 
         return path_folder+folder_name+'/'
 
@@ -59,7 +59,7 @@ class AwsS3Upload(object):
     
     def update_document(self, id_str, collection_name):
         try:
-            self.twitter_db.update_twitter_uploads_s3(id_str = id_str,
+            self.twitter_db.update_twitter_uploads_s3( id_str = id_str,
                                                       collection_name = collection_name)
         except:
             raise Exception()
@@ -88,7 +88,7 @@ class AwsS3Upload(object):
                 try:
 
                    json_formatted = self.to_string( tweet_json )
-                   json_formatted = clear_coding( json_formatted )
+                   json_formatted = econding_utils.clear_coding( json_formatted )
                    
                    self.__write_file__( self.path_file, json_formatted.encode('utf-8') )
 
@@ -104,7 +104,7 @@ class AwsS3Upload(object):
             print 'pesquisando collection name %s' % name
             self.__create_file__( name )
             
-        file_name =  'raw_data/'+self.date+'/'+ self.file_name
+        file_name =  'raw_data/'+self.current_time+'/'+ self.file_name
         s3 = S3Connector()
 
         s3.upload_file( bucket_name=self.bucket_name,
@@ -115,7 +115,7 @@ class AwsS3Upload(object):
         self.__save_s3_upload__(file_name, s3_path_name)
 
         print '\n\nDocumento importados: %s' % self.count
-        print 'Em aproximadamente: %s minutos' % diff_data_minute( self.data_start )
+        print 'Em aproximadamente: %s minutos' % date_utils.diff_data_minute( self.start )
         print 'S3: %s ' % ( s3_path_name)
         print 'FIM'
 

@@ -9,7 +9,7 @@ sys.path.append( python_libs_path + '/python-libs/connectors/redis/' )
 sys.path.append( python_libs_path + '/python-libs/utils/' )
 
 import storm_lib as storm
-from mongojudith import TwitterDB
+from twitterdb import TwitterDB
 from jsonutils import TwitterJsonUtils
 from redisjudith import RedisJudith
 import pymongo

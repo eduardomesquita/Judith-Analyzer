@@ -10,7 +10,7 @@ sys.path.append( absolute_path + '/lib/')
 
 import storm_lib as storm
 from twitterfeed import TwitterApi
-from mongojudith import TwitterDB
+from twitterdb import TwitterDB
 from redisjudith import RedisJudith
 
 class TwitterSpout(storm.Spout):
@@ -22,19 +22,15 @@ class TwitterSpout(storm.Spout):
         content = None
         twitter_api = TwitterApi()
         try:
-            
             generator_tweet = twitter_api.find_hashtags( keys_words = search['keysWords'],
                                                          language = search['language'],
                                                          qtd_page = 100 )
             content = generator_tweet.next()
-
             if twitter_db.is_new_tweet( search['keysWords'], content['text'], method ) is True:
                 twitter_db.update_last_twitter( search['keysWords'], content['text'], method)
-
                 while content:
                     tweets.append( content )
                     content = generator_tweet.next()
-
         except StopIteration as ex:
             pass
 
@@ -65,10 +61,8 @@ class TwitterSpout(storm.Spout):
                                                                 method)
             if len(tweet_iter) > 0:
                 start = True
-
                 for tweet_json in tweet_iter:
                     user_name = tweet_json['user']['screen_name']
-
                     check_duplicate = self.__check_duplicate_tweet__( redis, user_name,
                                                                       start)
                     if check_duplicate is True:
@@ -84,13 +78,11 @@ class TwitterSpout(storm.Spout):
                                 'keys_words' : search['keysWords'] }] )
             time.sleep(60)
 
-
     @classmethod
     def nextTuple(self):
         try:
-
-            twitter_db = TwitterDB()
             
+            twitter_db = TwitterDB()
             for method in ['by_tags','by_users']:
                 tweet_iter = TwitterSpout.__find_tweets__( twitter_db, 
                                                            method )

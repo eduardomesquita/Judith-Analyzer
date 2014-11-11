@@ -13,18 +13,29 @@ class ConfigDB( MongoJudithAbstract ):
     def default_collection_mapper(self):
         return 'scriptsMapper'
 
-    def save_jobs_upload_S3(self, path_s3_name, count, date, upload_time):
-        db_config = self.default_db_config()
-        
-        json_save = { 'path_s3_name' : path_s3_name,
-                      'count_tweet' : count,
-                      'create_at': date,
-                      'upload_time' :upload_time, 
-                      'name' : 'all_data' }
+    def default_collection_s3(self):
+        return 'uploads_s3'
 
-        self.save( json_save = json_save, collection_name = 'uploads_s3',
-                   db=db_config )
+    def default_collection_jobs(self):
+        return 'jobs_emr'
+
+    def default_parameters_config(self):
+        return 'parameters'
+
+    def save_jobs_upload_S3(self, **kargs):
+        self.save( data=kargs,collection_name=self.default_collection_s3() )
+        
+    def save_jobs_upload_EMR(self, **kargs):
+        self.save( data=kargs,collection_name=self.default_collection_jobs() )
+
+    def update_jobs_scripts_s3(self, script_name, path_s3_name):
+       match_criteria = {'pathS3Name':path_s3_name}
+       updated = {'scriptsReader':script_name}
+       self.push( match_criteria=match_criteria, 
+                  values=updated,
+                  collection_name = self.default_collection_s3(),
+                  upsert = False)
 
     def get_config(self, key_name):
-        db =  self.client[ self.default_db_config() ]
-        return db[ self.default_parameters_config() ].find({'key' : key_name})
+        return self.find({'key' : key_name},
+                         collection_name=self.default_parameters_config())

@@ -10,26 +10,20 @@ class MongoJudithAbstract(object):
     def default_collection_name(self):
         raise NotImplementedError()
 
-    def default_db_config(self):
-        return 'judith-project-config'
+    def save(self, data, collection_name):
+       self.mongo_db[ collection_name ].save( data )
 
-    def default_parameters_config(self):
-        return 'parameters'
+    def remove(self, match_criteria, collection_name):
+        self.mongo_db[ collection_name ].remove( match_criteria )
 
+    def update(self, match_criteria, values, collection_name, upsert = True):
+        self.mongo_db[ collection_name ].update( match_criteria, {'$set': values}, upsert = upsert)
 
+    def push(self, match_criteria, values, collection_name, upsert = True):
+        self.mongo_db[ collection_name ].update( match_criteria, {'$push': values}, upsert = upsert)
+        
+    def find(self, match_criteria, collection_name):
+        return self.mongo_db[ collection_name ].find( match_criteria )
 
-    def save(self, json_save, collection_name, db = None):
-        if not db:
-            self.mongo_db[ collection_name ].save( json_save )
-        else:
-            mongo_db  = self.client[ db ]
-            mongo_db[ collection_name ].save( json_save )
-
-    def update(self, key, values, collection_name, upsert = True):
-        self.mongo_db[ collection_name ].update( key, {'$set': values}, upsert = upsert)
-
-    def find(self, json_find, collection_name):
-        return self.mongo_db[ collection_name ].find( json_find)
-
-    def count(self, json_find, collection_name):
-        return self.mongo_db[ collection_name ].find( json_find ).count()
+    def count(self, match_criteria, collection_name):
+        return self.mongo_db[ collection_name ].find( match_criteria ).count()

@@ -19,11 +19,15 @@ class AnalyzerDB( MongoJudithAbstract ):
     def default_students_collections_name(self):
         return 'students'
 
-    def save_students(self, user_name, status, count):
-        json_save = { 'user_name': user_name, 
-                      'status_students': status,
-                      'count':count,
-                      'create_at': date_utils.current_time()}
+    def get_raw_data_students(self):
+       return self.find(match_criteria={},
+                        collection_name=self.default_students_collections_name() )
 
-        self.save( json_save=json_save, 
+    def save_students(self, user_name, status, count):
+        data = { 'userName': user_name, 
+                 'statusStudents': status,
+                 'count':count,
+                 'create_at': date_utils.current_time()}
+
+        self.save( data=data, 
                    collection_name=self.default_students_collections_name())
