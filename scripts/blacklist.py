@@ -18,6 +18,7 @@ class BlackListTweet(object):
 
     def __insert_into_blacklist__(self, **kargs):
         for search in list(self.twitter_db.find_all_search_users()):
+            print search['keysWords'][0]
             if search['keysWords'][0] not in kargs.keys():
                 data = {'username' : search['keysWords'][0]}
                 try:

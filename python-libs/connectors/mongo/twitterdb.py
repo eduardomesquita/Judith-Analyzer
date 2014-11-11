@@ -35,6 +35,8 @@ class TwitterDB( MongoJudithAbstract ):
         elif method == 'by_users':
             return self.__default_collection_tweet_users__()
 
+
+
     def find_user_name_black_list(self, user_name):
         return self.find({'username':user_name}, 
                          collection_name=self.__default_collection_black_list__())
@@ -47,10 +49,12 @@ class TwitterDB( MongoJudithAbstract ):
         self.save( data=kargs,
                    collection_name=self.__default_collection_black_list__())
 
-
     def find_all_search_users(self):
-        return self.find( match_criteria={},
+        match_criteria ={'last_tweet_text' : { '$ne' : '' }} 
+        return self.find( match_criteria=match_criteria,
                           collection_name=self.__default_collection_search_users__())
+
+
 
     def find_tags_search(self, method):
         collection_name = self.__get_collections_search_by_method__(method)  
