@@ -1,6 +1,6 @@
 from emrcontroller import *
 import sys
-path_python_libs =  '/'.join( sys.path[0].split('/')[:-1] )
+path_python_libs =  '/'.join( sys.path[0].split('/')[:-2] )
 sys.path.append(path_python_libs + '/python-libs/utils/')
 import dateutils as date_utils
 

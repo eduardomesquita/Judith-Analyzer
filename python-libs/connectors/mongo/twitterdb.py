@@ -36,6 +36,18 @@ class TwitterDB( MongoJudithAbstract ):
             return self.__default_collection_tweet_users__()
 
 
+    def get_raw_data_users(self, user_name, projection):
+        cursors = []
+        for collection_name in [self.default_collection_name(),
+                                self.__default_collection_tweet_users__()]:
+            cursor = self.find_projection( match_criteria={'user.screen_name': user_name},
+                                           projection=projection,
+                                           collection_name=collection_name)
+            cursors.append(cursor)
+        return cursors
+
+
+
 
     def find_user_name_black_list(self, user_name):
         return self.find({'username':user_name}, 
@@ -53,7 +65,6 @@ class TwitterDB( MongoJudithAbstract ):
         match_criteria ={'last_tweet_text' : { '$ne' : '' }} 
         return self.find( match_criteria=match_criteria,
                           collection_name=self.__default_collection_search_users__())
-
 
 
     def find_tags_search(self, method):
@@ -96,6 +107,11 @@ class TwitterDB( MongoJudithAbstract ):
 
     def find_raw_data_users(self, collection_name, skip, limit):
         return self.find( {},  collection_name = collection_name).skip( skip ).limit( limit )
+
+    def find_raw_data_users_by_username(self,user_name, collection_name):
+        return self.find( {'user.screen_name':user_name}, 
+                          collection_name = collection_name)
+
 
     def save_key_words_by_username(self, user_name):
         data = {'language' : 'pt', 'keysWords' : [ user_name ], 'last_tweet_text' : '' }

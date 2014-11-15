@@ -1,0 +1,27 @@
+extends layout
+
+block content
+	div.conteudo
+		form(method='post', action='/mapreduceUpdate')
+			h1 Ops!
+			div.hero-unit 
+				each item in cache
+					p Achamos uma pesquisa exatamente igual a sua feita por #{item.user} no dia: 
+					h3.Data(id = 'data')
+						| #{item._id} 
+					p Que tal utilizar os mesmos dados e obter uma resposta mais rápida? ;)
+
+					p Ó, caso não queira, o tempo para realizar a nova busca é de aproximadamente:
+					h3.Milis(id = 'mili', name = 'mili') 
+						| #{item.mapreduceInformation.timeMillis}
+					p Tem certeza que quer esperar esse tempo todo?
+					input(type='hidden', name='estado', value = '#{item.uf}') 
+					input(type='hidden', name='oldId', value = '#{item._id}') 
+					each chave in item.keys
+						input(type='hidden', name='campos', value = '#{chave}') 
+				button.btn.btn-success(type='submit', name = 'button', value = 'mapreduce') Sim, vou esperar.
+				button.btn.btn-danger(type='submit', name = 'button', value = 'cache') Não, estou com pressa.
+
+
+
+

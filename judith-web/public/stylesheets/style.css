@@ -1,0 +1,453 @@
+* {
+  margin: 0;
+  padding: 0;
+  outline: none;
+}
+
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: #fff;
+}
+
+table tbody tr.selected td {
+  background-color: #f9fce3;
+  font-weight:bold;
+}
+
+.header {
+  display: block;
+  width: 100%;
+  height: 80px;
+  background: #F1F1F1;
+  border-bottom: 3px solid #B9CE02;
+}
+
+.header h1 {
+  display: block;
+  float: left;
+  width: 245px;
+  height: 70px;
+  background: url(../images/logo.png) top center no-repeat;
+  text-indent: -99999px;
+  margin: 8px 0 0 0;
+}
+
+.capitalize {
+  text-transform:capitalize;
+  background: url(images/icon-table-sort.png) no-repeat 0px 12px;
+}
+
+#container  {
+  margin: 0 auto; 
+  width: 100%; 
+} 
+/* ==== Mapreduce ====*/
+
+#accordion.panel-group {
+  margin: 0 10px 10px 10px;
+}
+
+#accordion.panel-group h3 {
+  text-align: center;
+  margin: 10px 0 10px 0;
+  color: #424242;
+}
+
+.panel-heading {
+  border: 1px solid #E4E4E4;
+  border-radius: 10px 10px 0 0;
+  background-color: #FAFAFA;
+  margin: 10px 30px 0 30px;
+}
+
+.panel-title a{
+  text-decoration: none;
+  margin: 0 0 0 10px;
+  color: #424242;
+}
+
+.panel-title a:hover {
+  text-decoration: none; 
+  color: #FD8031;
+  font-size: 110%;
+}
+
+.panel-title p {
+  color: #514F4F;
+  font: 12px "Lucida Grande", Helvetica, Arial, sans-serif;
+  float: right;
+  margin: 2px 10px 0 0;
+}
+
+.panel-collapse.collapse {
+  border: 1px solid #E4E4E4;
+  background-color: #fff;
+  margin: 0 30px 0 30px;
+}
+
+.panel-collapse.collapse table {
+  align: center;
+  margin: 4px 0 4px 10px;
+}
+
+tr.table-quantidade {
+  border: 1px solid #E4E4E4;
+}
+
+.panel-body {
+  margin: 4px 0 4px 10px;
+} 
+
+.panel-body tr td {
+  background-color: #FD8031;
+}
+
+.titulo {
+  font-weight:bold;
+}
+
+ul.nav.nav-tabs {
+  padding-top: 22px;
+  align: right;
+  font-weight:bold;
+}
+
+ul.nav.nav-tabs a {
+  color: #514F4F;
+}
+
+ul.nav.nav-tabs a:hover {
+  text-decoration: none; 
+  color: #FFAF4D;
+}
+
+button {
+  float: right;
+  margin: 0 55px 10px 0;
+}
+
+.panel-collapse.collapse button {
+  float: right;
+  margin: 0 46px 15px 0;
+}
+
+/* ==== Mapreduce Detalhado ====*/
+
+table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):after { 
+    content: " \25B4\25BE" 
+}
+
+table.sortable thead {
+    cursor: default;
+}
+
+#tabelaDetalhada h3 {
+  text-align: center;
+  margin: 10px 0 10px 0;
+  color: #424242;
+}
+
+#bordaTabela {
+  margin: 5px 5px 5px 5px;
+  border-radius: 15px;
+  border: 1px solid #E4E4E4;
+}
+
+.tableFilter {
+  padding: 2px;
+  margin: 0 auto;
+  width: 40%;
+  text-align: center;
+}
+
+.tableFilter input {
+  border: 1px solid #ccc;
+  margin: 5px 5px 0 5px;
+}
+
+.tableFilter select
+{
+  border: 1px solid #ccc;
+  margin: 5px 5px 0 5px;
+}
+
+.tableFilter button
+{
+  margin: 10px 5px 0 5px;
+  float: center;
+}
+
+.tableFilter select {
+  border: 1px solid #ccc;
+}
+
+
+/* ==== FeedbackMR ====*/
+.conteudo {
+  width: 55%; 
+  margin: 0 auto;
+  padding: 50px;
+}
+
+.conteudo button {
+  margin: 51px 123px 0 7px;
+  align: center;
+}
+
+.hero-unit {
+  border: #DBDBDB solid 1px;
+  text-align: center;
+}
+
+.loading h1 {
+  background-color: #F5F5F5;
+  background: url(../images/loading.gif) top center no-repeat;
+  padding: 0 0 60px 0;
+}
+
+#myTable.table.table-hover a {
+  text-decoration: none;
+  color: #424242;
+}
+
+#myTable.table.table-hover a:hover {
+  color: #f9a91d;
+}
+/* ==== Paginacao ====*/
+.pages {
+  width: 425px;
+	margin: 0 auto;
+}
+
+.pages ul {
+	list-style-type: none;
+}
+.pages li {
+	float: left;
+	display: inline;
+	margin: 5px 5px 0 0;
+	display: block;
+}
+.pages li a {
+	color: #424242;
+	padding: 4px;
+	border: 1px solid #ddd;
+  border-radius: 2px;
+	text-decoration: none;
+	float: left;
+}
+.pages li a:hover {
+	color: #000000; 
+	border: 1px solid #f9b134;
+  border-radius: 2px;
+  font-weight: italic;
+}
+.pages li.nolink {
+	color: #CCC;
+	border: 1px solid #F3F3F3;
+  border-radius: 2px;
+	padding: 4px;
+}
+.pages li.current {
+	color: #FFF;
+	border: 1px solid #BACD00;
+  border-radius: 2px;
+	padding: 4px;
+	background: #BACD00;
+}
+
+/* ==== Login ====*/
+
+.login-container{
+    position: relative;
+    width: 220px;
+    margin: 80px auto;
+    padding: 20px 40px 40px;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #ccc;
+}
+
+.login-container::before,.login-container::after{
+    content: "";
+    position: absolute;
+    width: 100%;height: 100%;
+    top: 3.5px;left: 0;
+    background: #fff;
+    z-index: -1;
+    -webkit-transform: rotateZ(4deg);
+    -moz-transform: rotateZ(4deg);
+    -ms-transform: rotateZ(4deg);
+    border: 1px solid #ccc;
+}
+
+.login-container::after{
+    top: 5px;
+    z-index: -2;
+    -webkit-transform: rotateZ(-2deg);
+     -moz-transform: rotateZ(-2deg);
+      -ms-transform: rotateZ(-2deg);
+}
+
+.avatar{
+    width: 100px;height: 100px;
+    margin: 10px auto 30px;
+    border-radius: 100%;
+    border: 1.8px solid #aaa;
+    background-size: cover;
+    background-image: url(../images/nouser.png);
+}
+
+.form-box input{
+    width: 90%;
+    padding: 10px;
+    text-align: center;
+    height: 15px;
+    border: 1px solid #ccc;;
+    background: #fafafa;
+    transition:0.2s ease-in-out;
+}
+
+.form-box input:focus{
+    outline: 0;
+    background: #eee;
+}
+
+.form-box input[type="text"]{
+    border-radius: 5px;
+}
+
+.form-box input[type="password"]{
+    border-radius: 5px;
+    border-top: 0;
+}
+
+.form-box button.login{
+    margin-top:15px;
+    padding: 5px 37px;
+}
+
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+@-webkit-keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(20px);
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(20px);
+    -ms-transform: translateY(20px);
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+    -ms-transform: translateY(0);
+    transform: translateY(0);
+  }
+}
+
+.fadeInUp {
+  -webkit-animation-name: fadeInUp;
+  animation-name: fadeInUp;
+}
+
+.btn-entrar {
+  color:#fff;
+  text-shadow:0 -1px 0 rgba(0,0,0,0.25);
+  background-color: #BACD00;
+  background-image:-moz-linear-gradient(top,#C6D536,#BACD00);
+  background-image:-webkit-gradient(linear,0 0,0 100%,from(#C6D536),to(#BACD00));
+  background-image:-webkit-linear-gradient(top,#C6D536,#BACD00);
+  background-image:-o-linear-gradient(top,#C6D536,#BACD00);
+  background-image:linear-gradient(to bottom,#C6D536,#BACD00);
+  background-repeat:repeat-x;
+  border-color:#BACD00 #BACD00 #BACD00;
+  border-color:rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffbb450',endColorstr='#BACD00',GradientType=0);
+  filter:progid:DXImageTransform.Microsoft.gradient(enabled=false)
+}
+
+.btn-entrar:hover,.btn-entrar:focus,.btn-entrar:active,.btn-entrar.active,.btn-entrar.disabled,.btn-entrar[disabled]{
+    color:#fff;
+    background-color:#BACD00;
+    *background-color:#BACD00;
+}
+
+.btn-entrar:active,.btn-entrar.active {
+    background-color:#c4dd06 \9
+}
+
+.btn-entrar.active { 
+  color:rgba(255,255,255,0.75)
+}
+
+.resultadoPesquisa {
+  margin: 0 0 20px 15px;
+  text-align: center;
+  width: 100%
+}
+
+.resultadoPesquisa p {
+  font-size: 1.1em
+}
+
+.resultadoPesquisa h5 {
+  background-color: #F5F5F5;
+  background: url(../images/sad.png) top center no-repeat;
+  padding: 0 0 70px 0;
+}
+
+/* ==== Carrinho de Pesquisas ====*/
+
+
+.carrinhoPesquisas {
+  background-color: #e5e4e2;
+  float: right;
+  text-align: center;
+  padding: 3px;
+  position:fixed;
+}
+
+.carrinhoPesquisas p{
+
+    margin-top: 10px;
+    width:  160px;
+}
+.carrinhoPesquisas table {
+   margin-top: 25px;
+   margin-bottom:  3px;
+}
+
+.carrinhoPesquisas .ocultarCarrinhoPesquisas{
+ 
+    font-weight: bold;
+}
+
+.carrinhoPesquisas a{
+  text-align: right;
+  margin-left: 230px;
+  margin-top: 40px;
+}
+
+.carrinhoPesquisas table thead tr th{
+  margin-left:  5px;
+  font-weight: normal;
+}

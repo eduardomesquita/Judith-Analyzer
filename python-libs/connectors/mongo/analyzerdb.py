@@ -3,11 +3,6 @@ import json, pymongo
 from mongojudith import *
 import sys
 
-path_python_libs =  '/'.join( sys.path[0].split('/')[:-1] )
-sys.path.append(path_python_libs + '/python-libs/utils/')
-import dateutils as date_utils
-
-
 class AnalyzerDB( MongoJudithAbstract ):
 
     def __init__(self, ):
@@ -23,11 +18,11 @@ class AnalyzerDB( MongoJudithAbstract ):
        return self.find(match_criteria={},
                         collection_name=self.default_students_collections_name() )
 
-    def save_students(self, user_name, status, count):
+    def save_students(self, user_name, status, count, create_at):
         data = { 'userName': user_name, 
                  'statusStudents': status,
                  'count':count,
-                 'create_at': date_utils.current_time()}
+                 'create_at': create_at }
 
         self.save( data=data, 
                    collection_name=self.default_students_collections_name())

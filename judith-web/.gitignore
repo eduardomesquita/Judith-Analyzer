@@ -1,0 +1,8 @@
+node_modules/
+*.log
+xunit.xml
+coverage/
+.sonar/
+*.sublime-project
+*.sublime-workspace
+

@@ -1,12 +1,14 @@
 import sys, os
-path_python_libs =  '/'.join( sys.path[0].split('/')[:-1] )
-sys.path.append(path_python_libs + '/python-libs/connectors/mongo/')
-sys.path.append(path_python_libs + '/python-libs/aws-api/')
+current_dir =  '/'.join( sys.path[0].split('/')[:-2] )
+sys.path.append(current_dir + '/python-libs/connectors/mongo/')
+sys.path.append(current_dir + '/python-libs/aws-api/')
+sys.path.append(current_dir + '/python-libs/utils/')
 
 from configdb import ConfigDB
 from analyzerdb import AnalyzerDB
 from mapreducelib import AwsMapReduce
 from s3lib import S3Connector
+import dateutils as date_utils
 
 
 class EMRController(object):
@@ -21,6 +23,9 @@ class EMRController(object):
         raise NotImplementedError()
 
     def download_s3(self):
+        raise NotImplementedError()
+
+    def __get_script__(delf):
         raise NotImplementedError()
 
     def __get_bucket_name__(self):
@@ -78,7 +83,8 @@ class EMRController(object):
                 (status,user_name) = text.split(';')
                 function_save( user_name=user_name,
                                status=status,
-                               count=count )
+                               count=count,
+                               create_at=date_utils.current_time())
                 imports_count += 1
         print '%s estudantes salvos... ' % imports_count
         return imports_count

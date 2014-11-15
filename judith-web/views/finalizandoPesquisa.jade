@@ -1,0 +1,33 @@
+extends layout
+block content
+	div#container
+		div.resultadoPesquisa
+			h3 Ô, #{usuario}...
+			p Estamos quase finalizando sua pesquisa no estado #{estado}, agora falta só você definir a quantidade de dados que você quer.
+			
+		form(method = 'post', action = '/extraindoDados')
+			div#bordaTabela
+				div#tabelaDetalhada
+					table.table.table-striped
+						thead
+							tr
+								each campo in campos
+									input(type='hidden', name='campos', value = '#{campo}') 
+									th.capitalize #{campo}
+								th Quantidade Existente
+								th Quantidade de Dados 
+									i#example.icon-info-sign(title='Olha, caso você queira uma quantidade menor do que temos, basta apenas digitar nos campos abaixo a quantidade limite de dados.', data-toggle='tooltip')
+						tbody
+								- var posicaoJson = 0;
+								each camposPesquisados in itensDaPesquisa
+									input(type='hidden', name='itensDaPesquisa', value = '#{camposPesquisados}') 
+									tr
+										- for (var posicao in camposPesquisados)
+											td #{camposPesquisados[posicao]} 
+										th 
+											input(type='text', name = 'quantidadeDeDadosSolicitados', placeholder='preencha a quantidade')
+											
+									- posicaoJson++;
+
+			input(type='hidden', name='estado', value = '#{estado}') 
+			button.btn.btn-default(type='submit') Exportar base!

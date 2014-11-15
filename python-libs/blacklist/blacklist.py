@@ -1,8 +1,8 @@
 import sys, pymongo
 
-path_python_libs =  '/'.join( sys.path[0].split('/')[:-1] )
-sys.path.append(path_python_libs + '/python-libs/connectors/mongo/')
-sys.path.append(path_python_libs + '/python-libs/aws-api/')
+current_dir =  '/'.join( sys.path[0].split('/')[:-1] )
+sys.path.append(current_dir + '/connectors/mongo/')
+sys.path.append(current_dir + '/aws-api/')
 from analyzerdb import AnalyzerDB
 from twitterdb import TwitterDB
 

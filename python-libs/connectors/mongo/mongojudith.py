@@ -25,5 +25,8 @@ class MongoJudithAbstract(object):
     def find(self, match_criteria, collection_name):
         return self.mongo_db[ collection_name ].find( match_criteria )
 
+    def find_projection(self, match_criteria, projection,  collection_name):
+        return self.mongo_db[ collection_name ].find( match_criteria, projection )
+
     def count(self, match_criteria, collection_name):
         return self.mongo_db[ collection_name ].find( match_criteria ).count()
