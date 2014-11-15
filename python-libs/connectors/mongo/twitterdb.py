@@ -46,9 +46,6 @@ class TwitterDB( MongoJudithAbstract ):
             cursors.append(cursor)
         return cursors
 
-
-
-
     def find_user_name_black_list(self, user_name):
         return self.find({'username':user_name}, 
                          collection_name=self.__default_collection_black_list__())

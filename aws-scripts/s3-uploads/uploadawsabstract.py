@@ -8,6 +8,7 @@ sys.path.append(current_dir + '/python-libs/utils/')
 
 from twitterdb import TwitterDB
 from configdb import ConfigDB
+from analyzerdb import AnalyzerDB
 from s3lib import S3Connector
 import dateutils as date_utils
 import encodingutils as econding_utils
@@ -18,9 +19,9 @@ class AwsUploadsS3Abstract(object):
     def __init__(self, folder_name_save):
         setattr(self, 'twitter_db', TwitterDB())
         setattr(self, 'config_db', ConfigDB())
+        setattr(self, 'analyzer_db', AnalyzerDB())
         setattr(self, 'collections_names', ['twittersUsers', 'twittersTags'])
         setattr(self, 'bucket_name', self.__get_aws_params__('aws_bucket_name'))
- 
         setattr(self, 'current_time', date_utils.current_time().replace(' ', '-').replace(':', '-'))
         setattr(self, 'start', date_utils.current_time())
         setattr(self, 'count', 0 )
@@ -50,8 +51,8 @@ class AwsUploadsS3Abstract(object):
             data +=  "%s=%s;" % (key, values)
       return data
 
-    def save_s3_jobs_upload(self, file_name, s3_path_name, name='all_data'):
-
+    def save_s3_jobs_upload(self, file_name, s3_path_name, name):
+       
         data = { 'pathS3Name' : s3_path_name,
                  'counttweet' : self.count,
                  'create_at': self.current_time,

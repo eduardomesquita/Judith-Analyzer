@@ -74,21 +74,6 @@ class EMRController(object):
         self.config_db.update_jobs_scripts_s3( script_name=script_name,
                                                path_s3_name=path_s3_name)
 
-    def read_files_s3_and_save(self, list_files, function_save):
-        imports_count = 0
-        for file_name in list_files:
-            for line in open(file_name,'r'):
-                line = line.strip()
-                (text, count) = line.split('\t')
-                (status,user_name) = text.split(';')
-                function_save( user_name=user_name,
-                               status=status,
-                               count=count,
-                               create_at=date_utils.current_time())
-                imports_count += 1
-        print '%s estudantes salvos... ' % imports_count
-        return imports_count
-
 
     def download_result_map_reduce(self, output_file, folder_name):
 

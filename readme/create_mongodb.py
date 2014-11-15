@@ -23,6 +23,10 @@ db = client['judith-twitter']
 
 #db.collection.ensureIndex( { a: 1 }, { unique: true, dropDups: true } )
 
+db.collection.ensureIndex( { a: 1 }, { unique: true } )
+db.students.ensureIndex( { "userName": 1, "statusStudents" :1 }, { unique: true } )
+db.wordCountStudents.ensureIndex( { "word": 1, "statusStudents" :1, "create_at": 1, "location" : 1 }, { unique: true } )
+
 #db['twittersTags'].ensure_index([('id_str',1), ('unique' , True)])
 #db['twittersUsers'].ensure_index([('id_str',1), ('unique' , True)])
 #db['searchUsers'].ensure_index([('keysWords',1), ('unique' , True)])
