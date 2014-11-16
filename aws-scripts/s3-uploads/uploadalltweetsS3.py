@@ -23,7 +23,7 @@ class AwsS3AllTweetUpload(AwsUploadsS3Abstract):
     def create_file(self, collection_name):
 
         total_count = self.__count_tweet__( collection_name = collection_name )
-        limit, skip = 60000, 0
+        limit, skip = 300000, 0
 
         if total_count < limit:
             limit = total_count
@@ -56,7 +56,8 @@ class AwsS3AllTweetUpload(AwsUploadsS3Abstract):
         s3.upload_file( bucket_name=self.bucket_name,
                         file_name = file_name,
                         path_file=self.path_file )
-      
+        
+        print 'fazendo upload arquivo....'
         s3_path_name = 's3n://'+self.bucket_name+'/'+file_name
         self.save_s3_jobs_upload(file_name=file_name,
                                  s3_path_name=s3_path_name,

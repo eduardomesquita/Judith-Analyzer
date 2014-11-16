@@ -61,13 +61,13 @@ class ExecuteEMRFindStudents( EMRController ):
             print 'log: ' + log_file
             print 'criando map reduce.. com %s instancias' % n_instance
             state, job_id = 'COMPLETED', 1
-            '''(state, job_id) = self.aws_map_reduce.create( name = 'teste',
+            (state, job_id) = self.aws_map_reduce.create( name = 'teste',
                                                           input_file=input_file,
                                                           output_file=output_file,
                                                           log_file=log_file,
                                                           mapper=script_name,
                                                           n_instance = n_instance)
-            '''
+           
             print '\n\n'
             if state == 'COMPLETED':
                 imports_count=self.download_s3( output_file=output_file,
