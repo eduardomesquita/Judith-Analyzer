@@ -64,14 +64,14 @@ class ExecuteEMRWordCount( EMRController ):
             print 'output: ' + output_file
             print 'log: ' + log_file
             print 'criando map reduce.. com %s instancias' % n_instance
-            state,job_id= 'COMPLETED', 1
-            '''(state, job_id) = self.aws_map_reduce.create( name='word_count_students',
+            
+            (state, job_id) = self.aws_map_reduce.create( name='word_count_students',
                                                           input_file=input_file,
                                                           output_file=output_file,
                                                           log_file=log_file,
                                                           mapper=script_name,
                                                           n_instance = n_instance)
-            '''
+            
             print '\n\n'
             if state == 'COMPLETED':
 

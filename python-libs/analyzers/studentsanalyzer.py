@@ -1,24 +1,23 @@
-import sys, pymongo, time
-current_dir =  '/'.join( sys.path[0].split('/')[:-1] )
-#sys.path.append(current_dir + '/python-libs/connectors/mongo/')
-sys.path.append(current_dir + '/connectors/mongo/')
-from analyzerdb import AnalyzerDB
-from twitterdb import TwitterDB
+import time
 from datetime import datetime
+from analyzerabstract import *
 
-
-class CountStudents(object):
+class StudentsAnalyzer(  AnalyzerAbstract ):
 
     def __init__(self):
-        setattr(self, 'analyzer_db', AnalyzerDB())
-        setattr(self, 'twiter_db', TwitterDB())
+        AnalyzerAbstract.__init__(self)
+        setattr(self, 'users', {})
+        setattr(self, 'status_users', {'possible': 0, 'student':0})
+        setattr(self, 'location', {})
+        setattr(self, 'created_at', {})
+
         
-    def __get_raw_data__(self, projection):
+    def get_raw_data(self, projection):
         raw_data = {}
         for user_name in self.users.keys():
             raw_data[user_name] = []
             for cursor in self.twiter_db.get_raw_data_users( user_name=user_name,
-                                                            projection=projection):
+                                                             projection=projection):
                 for bjson in list(cursor):
                     raw_data[user_name].append(bjson)
 
@@ -52,7 +51,7 @@ class CountStudents(object):
             self.status_users[ values ] += 1
 
     def __aggregation_location__(self):
-        data = self.__get_raw_data__(projection={'user.location':1, '_id':0})
+        data = self.get_raw_data(projection={'user.location':1, '_id':0})
         aggretation = {}
         for user, list_location in data.iteritems():
             aggretation[user] = {}
@@ -70,7 +69,7 @@ class CountStudents(object):
         self.location = aggretation
 
     def __aggregation_creat_at__(self):
-        data = self.__get_raw_data__(projection={'created_at':1, '_id':0})
+        data = self.get_raw_data(projection={'created_at':1, '_id':0})
         aggretation = {}
         fmt = '%H:%M:%S'
         for user, created_at in data.iteritems():
@@ -87,20 +86,12 @@ class CountStudents(object):
 
                
     def init(self):
-
-        setattr(self, 'users', {})
-        setattr(self, 'status_users', {'possible': 0, 'student':0})
-        setattr(self, 'location', {})
-        setattr(self, 'created_at', {})
-
         self.__count_user_status__()
         self.__aggregation_status__()
         self.__aggregation_location__()
         self.__aggregation_creat_at__()
-        
-        for i in self.created_at:
-            print self.created_at[i]
+
 
 
 if __name__ == '__main__':
-    CountStudents().init()
+    StudentsAnalyzer().init()

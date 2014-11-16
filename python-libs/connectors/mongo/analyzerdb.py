@@ -18,8 +18,13 @@ class AnalyzerDB( MongoJudithAbstract ):
         return 'wordCountStudents'
 
     def get_raw_data_students(self):
-       return self.find(match_criteria={},
+        return self.find(match_criteria={},
                         collection_name=self.default_students_collections_name() )
+
+    def get_raw_data_tweets(self, projection):
+        return self.find_projection(match_criteria={},
+                                    projection=projection,
+                                    collection_name=self.default_students_collections_word_count() )
 
     def save_students(self, user_name, status, count, create_at):
         try:
