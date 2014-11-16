@@ -75,13 +75,18 @@ class AwsUploadsS3Abstract(object):
         user_name[bjson['userName']] = 1
 
       for user in  user_name.keys():
+        print user
         cursors = self.twitter_db.get_raw_data_users( user, {'_id':0} )
         for c in cursors:
           for tweet in list(c):
 
             a = open('raw_darta', 'a')
-            a.write(str(tweet)+'\n')
+            a.write(json.dumps(tweet)+'\n')
             a.close()
 
+      #for line in open('raw_darta','r'):
+      #  json_loads =  json.loads(line.strip().replace('\n',''))
+      #  print json_loads
+
 if __name__ == '__main__':
-    AwsUploadsS3Abstract('nada').nada()
+  AwsUploadsS3Abstract('nada').nada()
