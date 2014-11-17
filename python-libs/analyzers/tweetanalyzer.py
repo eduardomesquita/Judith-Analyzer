@@ -2,104 +2,154 @@ from analyzerabstract import *
 from sets import Set
 import time
 from datetime import datetime
+from collections import OrderedDict
+
+def read_dicinonary():
+    words, courses  = {}, {}
+    for word in open('dictionary.txt', 'r'):
+        word = word.upper().strip()
+        if '=' in word:
+            ( _, word ) = word.split('=')
+            courses[word] = 1
+        words[ word ] = 1
+    return words.keys(), courses.keys()
+
 
 class TweetAnalyzer(  AnalyzerAbstract ):
 
     def __init__(self):
         AnalyzerAbstract.__init__(self)
-        setattr(self, 'word_count_all', {})
-        setattr(self, 'word_count_status', {})
-        setattr(self, 'word_count_all_location', {})
-        setattr(self, 'count_status_location', {})
+        setattr(self, 'all_word', {})
+        setattr(self, 'status_user_word', {})
+        setattr(self, 'location_word', {})
+        setattr(self, 'course_word', {})
+        setattr(self, 'course_word_status', {})
+        setattr(self, 'course_word_location', {})
 
-    def get_raw_data(self, projection = {'_id':0}):
+        dicionary, dicionary_courses = read_dicinonary()
+        setattr(self, 'dicionary', dicionary)
+        setattr(self, 'dicionary_courses', dicionary_courses)
+
+
+    def __aggretation_word__(self, word, count, **kargs):
+       return self.sum_dict(word, count, **kargs)
+       
+    def __aggretation_word_status__(self, word, count, status, **kargs):
+        if not kargs.has_key( status ):
+            kargs[ status ] = {}
+        kargs[ status ] = self.sum_dict(word, count,**kargs[ status ])
+        return kargs
+
+    def __aggretation_word_status_location__(self, word, count, status, location, **kargs):
+        if not kargs.has_key( status ):
+            kargs[status] = {}
+
+        if not kargs[status].has_key( location ):
+            kargs[status][location] = {}
+        kargs[ status ][location] = self.sum_dict(word, count,**kargs[ status ][location])
+        return kargs
+
+
+
+    def sum_dict(self, key, count, **kargs):    
+        if kargs.has_key( key ):
+            kargs[ key ] += int(count)
+        else:
+            kargs[ key ] = int(count)
+        return kargs
+
+    def sort_by_values(self, **dicts):
+        return OrderedDict(sorted(dicts.items(), key=lambda t: t[1]))
+
+    def emit_students(self, word, count, status, location):
+        if word in self.dicionary: ##dicionario words
+            self.all_word = self.__aggretation_word__( word, count, **self.all_word)
+
+            if status != 'None' and status != '' and status != None:
+                self.status_user_word = self.__aggretation_word_status__(word,count, 
+                                                                         status, **self.status_user_word)
+
+                if location != 'None' and location != '' and location != None:
+                    self.location_word= self.__aggretation_word_status_location__(word,count,
+                                                                                  status, location,
+                                                                                  **self.location_word)
+
+    def emit_courses(self, word, count, status, location):
+        if word in self.dicionary_courses: ## dicionario cursos
+            self.course_word = self.__aggretation_word__( word, count, **self.course_word)
+
+            if status != 'None' and status != '' and status != None:
+                self.course_word_status = self.__aggretation_word_status__(word,count, 
+                                                                           status, **self.course_word_status)
+            
+                if location != 'None' and location != '' and location != None:
+                    self.course_word_location=self.__aggretation_word_status_location__(word,count,
+                                                                                        status, location,
+                                                                                        **self.course_word_location)
+
+    def emit(self, bjson):
+        word = bjson['word'].upper()
+        count = bjson['count']
+        status = bjson['statusStudents']
+        location = bjson['location'].upper()
+        self.emit_students(word=word, count=count, status=status, location=location)
+        self.emit_courses(word=word, count=count, status=status, location=location)
+
+
+    def get_raw_data(self, projection = {'_id':0, 'created_at':0}):
         for bjson in self.analyzer_db.get_raw_data_tweets( projection ):
-            yield bjson
+             self.emit(bjson)
 
-    def __sort_aggretation__(self, aggretation):
-        qtds = aggretation.values()
-        qtds.sort()  # ordena as quantidades
-        qtds = qtds[-20:] # os 20 maiores
-        aggretation_final = {}
-        for key, values in aggretation.iteritems():
-           if values in qtds:
-               aggretation_final[key] = values
-        return aggretation_final
+    def sort_limit_10_great(self, dicts_tmp):
+        lista_return = {}
+        for key in  dicts_tmp.keys()[::-1]:
+           if len(lista_return.keys()) < 10:
+                lista_return[key] = dicts_tmp[key] 
+        return lista_return
 
-    
-    def __aggretation_word_count_all_students__(self):
+    def sort_limit_3_great(self, dicts_tmp):
+        lista_return = {}
+        for key in  dicts_tmp.keys()[::-1]:
+            if len(lista_return.keys()) < 3:
+                lista_return[key] = dicts_tmp[key] 
+        return lista_return
 
-        aggretation = {}
-        for tweet in self.get_raw_data( {'_id':0, 'word':1, 'count':1} ):
+    def get_values_word(self, **kargs):
+        kargs = self.sort_by_values( **kargs )
+        return  self.sort_limit_10_great( kargs )
 
-            word = tweet['word'].upper()
-            if len(word)  > 2:
-                if aggretation.has_key(word):
-                    aggretation[word] += int(tweet['count'])
-                else:
-                    aggretation[word] = int(tweet['count'])
-        self.word_count_all=self.__sort_aggretation__(aggretation)
+    def get_values_status(self, **kargs):
+        for key in kargs.keys():
+            kargs[key] = self.sort_by_values( **kargs[key])
+            kargs[key] = self.sort_limit_10_great( kargs[key] )
+        return kargs
 
-
-    def __aggretation_word_count_students__(self):
-
-        aggretation = {}
-        for tweet in self.get_raw_data( {'_id':0, 'word':1, 'count':1, 'statusStudents':1} ):
-            status_user = tweet['statusStudents']
-            if not aggretation.has_key( status_user ) and status_user != 'None':
-                aggretation[ status_user ] = {}
-
-            word = tweet['word'].upper()
-            if len(word)  > 2 and status_user != 'None':
-                if aggretation[ status_user ].has_key(word):
-                    aggretation[status_user][word] += int(tweet['count'])
-                else:
-                    aggretation[status_user][word] = int(tweet['count'])
-
-        for status in aggretation.keys():
-            self.word_count_status[status] = self.__sort_aggretation__(aggretation[status])
-      
-    def __aggretation_status_count_location__(self):
-
-        aggretation = {}
-        for tweet in self.get_raw_data( {'_id':0, 'statusStudents':1, 'location':1} ):
-            status = tweet['statusStudents'].upper()
-            location = tweet['location'].upper()
-            if status != 'NONE' and location != 'NONE':
-                if aggretation.has_key(status):
-                    if aggretation[status].has_key(location):
-                       aggretation[status][location] += 1
-                    else:
-                       aggretation[status][location] = 1
-                else:
-                    aggretation[status] = {}
-
-        self.count_status_location =  aggretation
-
-    def __aggretation_word_count_location__(self):
-
-        aggretation = {}
-        for tweet in self.get_raw_data( {'_id':0, 'word':1, 'count':1, 'location':1} ):
-            location = tweet['location']
-            if not aggretation.has_key( location ) and location != 'None':
-                aggretation[ location ] = {}
-
-            word = tweet['word'].upper()
-            if len(word)  > 2 and location != 'None':
-                if aggretation[ location ].has_key(word):
-                    aggretation[location][word] += int(tweet['count'])
-                else:
-                    aggretation[location][word] = int(tweet['count'])
-
-        for location in aggretation.keys():
-            self.word_count_all_location[location] = self.__sort_aggretation__(aggretation[location])
-    
+    def get_values_location(self, **kargs):
+        for key in kargs.keys():
+            for location in kargs[key].keys():
+               kargs[key][location] =  self.sort_by_values( **kargs[key][location])
+               kargs[key][location] = self.sort_limit_3_great( kargs[key][location] )
+        return kargs
 
     def init(self):
-        self.__aggretation_word_count_all_students__()
-        self.__aggretation_word_count_students__()
-        self.__aggretation_word_count_location__()
-        self.__aggretation_status_count_location__()
+       
+        self.get_raw_data()
+
+        self.all_word = self.get_values_word( **self.all_word )
+        self.course_word = self.get_values_word( **self.course_word )
+     
+        self.status_user_word = self.get_values_status( **self.status_user_word )
+        self.course_word_status = self.get_values_status( **self.course_word_status )
+
+        self.location_word = self.get_values_location( **self.location_word )
+        self.course_word_location =  self.get_values_location( **self.course_word_location)
+       
+        self.analyzer_db.save_cache_data('word_count_status_user', **self.status_user_word ) 
+        self.analyzer_db.save_cache_data('word_count_all_students', **self.all_word ) 
+        self.analyzer_db.save_cache_data('word_count_status_location_user', **self.location_word )
+        self.analyzer_db.save_cache_data('word_count_course_word', **self.course_word )
+        self.analyzer_db.save_cache_data('word_course_word_status', **self.course_word_status )
+        self.analyzer_db.save_cache_data('word_course_word_location', **self.course_word_location ) 
 
 
 if __name__ == '__main__':

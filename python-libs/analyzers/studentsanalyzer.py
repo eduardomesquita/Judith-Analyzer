@@ -7,22 +7,29 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
     def __init__(self):
         AnalyzerAbstract.__init__(self)
         setattr(self, 'users', {})
-        setattr(self, 'status_users', {'possible': 0, 'student':0})
+        setattr(self, 'status_users_count', {'possible': 0, 'student':0})
         setattr(self, 'location', {})
         setattr(self, 'created_at', {})
+        setattr(self, 'raw_data', {})
 
-        
     def get_raw_data(self, projection):
-        raw_data = {}
-        for user_name in self.users.keys():
-            raw_data[user_name] = []
+        self.raw_data = {}
+        for user_name in self.users_status_name.keys()[:5]:
+
+            self.raw_data[user_name] = []
             for cursor in self.twiter_db.get_raw_data_users( user_name=user_name,
                                                              projection=projection):
                 for bjson in list(cursor):
-                    raw_data[user_name].append(bjson)
+                    self.raw_data[user_name].append(bjson)
 
-        return raw_data
 
+    def sum_dict(self, key, **kargs):
+        
+        if kargs.has_key( key ):
+            kargs[ key ] += 1
+        else:
+            kargs[ key ] = 1
+        return kargs
 
     def __get_count_status__(self, **kargs):
         for user in  kargs.keys():
@@ -33,9 +40,10 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
                 student = int(kargs[user]['ESTUDANTE'])
 
             if possible >= student:
-                self.users[user] = 'possible'
+                self.users_status_name[user] = 'possible'
             else:
-                self.users[user] = 'student'       
+                self.users_status_name[user] = 'student'
+
 
     def __count_user_status__(self):
         status_users = {}
@@ -44,54 +52,82 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
             if not status_users.has_key( user_name ):
                 status_users[user_name] = {}
             status_users[user_name][status] = count
+
         self.__get_count_status__( **status_users )
 
     def __aggregation_status__(self):
-        for values in self.users.values():
-            self.status_users[ values ] += 1
+        for key, values in self.users_status_name.iteritems():
+            self.status_users_count[ values ] += 1
 
     def __aggregation_location__(self):
-        data = self.get_raw_data(projection={'user.location':1, '_id':0})
+
         aggretation = {}
-        for user, list_location in data.iteritems():
-            aggretation[user] = {}
-            for location in list_location:
-                city = location['user']['location']
-                if city != '':
-                    if aggretation[user].has_key( city ):
-                        aggretation[user][ city ] += 1
-                    else:
-                        aggretation[user][ city ] = 1
-
-            if aggretation[user] == {}:
+        for user, list_bjson in self.raw_data.iteritems():
+            aggretation[user] = { 'location': {},
+                                  'status_users' : self.users_status_name[ user ] }
+            for bjson in list_bjson:
+                if bjson['user'].has_key('location'):
+                    location = bjson['user']['location']          
+                    if location != '':
+                        aggretation[user]['location'] = self.sum_dict(location, **aggretation[user]['location'])
+            
+            if aggretation[user]['location'] == {}:
                 del aggretation[user]
-
+        
         self.location = aggretation
 
-    def __aggregation_creat_at__(self):
-        data = self.get_raw_data(projection={'created_at':1, '_id':0})
+    def __aggregation_creat_at__(self, fmt = '%H:%M:%S'):
+     
         aggretation = {}
-        fmt = '%H:%M:%S'
-        for user, created_at in data.iteritems():
-         
-           for str in  created_at:
-                ts = time.strftime('%Y-%m-%d %H:%M:%S',
-                    time.strptime(str['created_at'],'%a %b %d %H:%M:%S +0000 %Y'))
-                if aggretation.has_key( ts ):
-                    aggretation[ts] += 1
-                else:
-                    aggretation[ts] = 1
+        for user, list_bjson in self.raw_data.iteritems():
+            aggretation[user] = { 'created_tweet_at': {'year':{},
+                                                       'month':{},
+                                                       'day':{},
+                                                       'hour':{},
+                                                       'minute':{}},
+                                  'status_users' : self.users_status_name[ user ] }
+
+            for bjson in list_bjson:
+               if bjson.has_key('created_at'):
+                    ts = time.strftime('%Y-%m-%d %H:%M:%S',
+                        time.strptime(bjson['created_at'],'%a %b %d %H:%M:%S +0000 %Y'))
+
+                    (data_str, time_str) = ts.split(' ')
+                    (y, m, d) = data_str.split('-')
+                    (h, m, s) = time_str.split(':')
+
+                    aggretation[user]['created_tweet_at']['year'] = self.sum_dict(y, **aggretation[user]['created_tweet_at']['year'])
+                    aggretation[user]['created_tweet_at']['month'] = self.sum_dict(m, **aggretation[user]['created_tweet_at']['month'])
+                    aggretation[user]['created_tweet_at']['day'] = self.sum_dict(d, **aggretation[user]['created_tweet_at']['day'])
+                    aggretation[user]['created_tweet_at']['hour'] = self.sum_dict(h, **aggretation[user]['created_tweet_at']['hour'])
+                    aggretation[user]['created_tweet_at']['minute'] = self.sum_dict(s, **aggretation[user]['created_tweet_at']['minute'])
 
         self.created_at = aggretation
 
                
     def init(self):
+
+        #print 'start cache..'
+
+        self.users_status_name =  {}
         self.__count_user_status__()
+        self.analyzer_db.save_cache_data('users_status_name', **self.users_status_name ) 
+
+        self.status_users_count =  {'possible': 0, 'student':0}
         self.__aggregation_status__()
+        self.analyzer_db.save_cache_data('user_status_count', **self.status_users_count ) 
+
+        self.get_raw_data({'_id':0})
+
+        self.location = {}
         self.__aggregation_location__()
+        self.analyzer_db.save_cache_data('user_status_location', **self.location ) 
+        
+        self.created_at = {}
         self.__aggregation_creat_at__()
+        self.analyzer_db.save_cache_data('user_status_created_at', **self.created_at ) 
 
-
+        #print 'Fim cache..'
 
 if __name__ == '__main__':
     StudentsAnalyzer().init()

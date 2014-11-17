@@ -68,25 +68,3 @@ class AwsUploadsS3Abstract(object):
         raise NotImplementedError()
     def run(self):
         raise NotImplementedError()
-
-    def nada(self):
-      user_name = {}
-      for bjson in self.analyzer_db.get_raw_data_students():
-        user_name[bjson['userName']] = 1
-
-      for user in  user_name.keys():
-        print user
-        cursors = self.twitter_db.get_raw_data_users( user, {'_id':0} )
-        for c in cursors:
-          for tweet in list(c):
-
-            a = open('raw_darta', 'a')
-            a.write(json.dumps(tweet)+'\n')
-            a.close()
-
-      #for line in open('raw_darta','r'):
-      #  json_loads =  json.loads(line.strip().replace('\n',''))
-      #  print json_loads
-
-if __name__ == '__main__':
-  AwsUploadsS3Abstract('nada').nada()

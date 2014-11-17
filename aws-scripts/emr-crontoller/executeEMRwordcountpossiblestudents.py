@@ -26,8 +26,7 @@ class ExecuteEMRWordCount( EMRController ):
                 function_save( status_students=status,
                                location=location,
                                word=word,
-                               count=count,
-                               create_at=date_utils.current_time())
+                               count=count)
                 imports_count += 1
         print '%s words salvos... ' % imports_count
         return imports_count

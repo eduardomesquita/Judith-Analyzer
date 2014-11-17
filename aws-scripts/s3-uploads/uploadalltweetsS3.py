@@ -27,23 +27,24 @@ class AwsS3AllTweetUpload(AwsUploadsS3Abstract):
 
         if total_count < limit:
             limit = total_count
-
-        for i in range(0, total_count, limit):
-           skip = i
-           tweets = self.twitter_db.find_raw_data_users( collection_name=collection_name, 
-                                                         skip=skip, 
-                                                         limit=limit)
-           for tweet in tweets:
-                try:
-                   tweet_formatted = self.to_string(tweet)
-                   tweet_formatted = econding_utils.clear_coding(txt=tweet_formatted)
-                   self.write_file(path_file=self.path_file,
-                                   content=tweet_formatted.encode('utf-8') )
-                   self.update_document_tweet( tweet['id_str'], collection_name ) ##flag
-                   self.count += 1
-                except Exception as e:
-                   print 'fail: %s' % e
-                   break
+       
+        if limit > 0:
+          for i in range(0, total_count, limit):
+             skip = i
+             tweets = self.twitter_db.find_raw_data_users( collection_name=collection_name, 
+                                                           skip=skip, 
+                                                           limit=limit)
+             for tweet in tweets:
+                  try:
+                     tweet_formatted = self.to_string(tweet)
+                     tweet_formatted = econding_utils.clear_coding(txt=tweet_formatted)
+                     self.write_file(path_file=self.path_file,
+                                     content=tweet_formatted.encode('utf-8') )
+                     self.update_document_tweet( tweet['id_str'], collection_name ) ##flag
+                     self.count += 1
+                  except Exception as e:
+                     print 'fail: %s' % e
+                     break
 
     def run(self):
         print 'salvando dados locais em %s' %  self.path_file

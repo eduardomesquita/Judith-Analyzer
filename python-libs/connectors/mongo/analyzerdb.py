@@ -17,6 +17,9 @@ class AnalyzerDB( MongoJudithAbstract ):
     def default_students_collections_word_count(self):
         return 'wordCountStudents'
 
+    def default_students_collections_cache(self):
+        return 'cacheAnalyzer'
+
     def get_raw_data_students(self):
         return self.find(match_criteria={},
                         collection_name=self.default_students_collections_name() )
@@ -24,7 +27,23 @@ class AnalyzerDB( MongoJudithAbstract ):
     def get_raw_data_tweets(self, projection):
         return self.find_projection(match_criteria={},
                                     projection=projection,
-                                    collection_name=self.default_students_collections_word_count() )
+                                    collection_name=self.default_students_collections_word_count()).limit(100000)
+
+
+    def save_cache_data(self, key, **kargs ):
+        try:
+            data = {'name' : key, 'values' : kargs}
+            self.save( data=data, 
+                       collection_name=self.default_students_collections_cache())
+
+        except pymongo.errors.DuplicateKeyError:
+            match_criteria = {'name': key}
+            values = {'values' : kargs}
+            self.update( match_criteria=match_criteria,
+                         values=values,
+                         collection_name=self.default_students_collections_cache(),
+                         upsert = False)
+
 
     def save_students(self, user_name, status, count, create_at):
         try:
@@ -44,13 +63,12 @@ class AnalyzerDB( MongoJudithAbstract ):
                          upsert = False)
 
 
-    def save_word_count(self, status_students, location, word, count, create_at):
+    def save_word_count(self, status_students, location, word, count):
         try:
             data = { 'word': word, 
                      'statusStudents': status_students,
                      'location': location,
-                     'count':count,
-                     'created_at': create_at }  
+                     'count':count}
             self.save( data=data, 
                        collection_name=self.default_students_collections_word_count())
 

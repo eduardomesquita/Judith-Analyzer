@@ -27,10 +27,19 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
+
+app.set('view engine', 'ejs');
+app.set('view engine', 'jade');
+
+app.engine('html', require('ejs').renderFile);
+
+
 app.use(function(req,res,next){
     req.db = db;
     next();
 });
+
+
 
 require('./routes/index')(app,passport);
 

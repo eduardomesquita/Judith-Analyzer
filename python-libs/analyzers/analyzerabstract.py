@@ -1,6 +1,6 @@
 import sys, pymongo, time
 current_dir =  '/'.join( sys.path[0].split('/')[:-1] )
-#sys.path.append(current_dir + '/python-libs/connectors/mongo/')
+sys.path.append(current_dir + '/python-libs/connectors/mongo/')
 sys.path.append(current_dir + '/connectors/mongo/')
 from analyzerdb import AnalyzerDB
 from twitterdb import TwitterDB
