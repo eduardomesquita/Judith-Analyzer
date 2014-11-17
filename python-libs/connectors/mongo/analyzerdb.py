@@ -20,6 +20,11 @@ class AnalyzerDB( MongoJudithAbstract ):
     def default_students_collections_cache(self):
         return 'cacheAnalyzer'
 
+    def get_cache_analyzer(self, name):
+        return self.find_projection(match_criteria={'name':name},
+                                    projection={'name':0, '_id':0},
+                                    collection_name=self.default_students_collections_cache() )
+
     def get_raw_data_students(self):
         return self.find(match_criteria={},
                         collection_name=self.default_students_collections_name() )

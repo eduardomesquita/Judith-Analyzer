@@ -25,8 +25,9 @@ class TweetAnalyzer(  AnalyzerAbstract ):
         setattr(self, 'course_word', {})
         setattr(self, 'course_word_status', {})
         setattr(self, 'course_word_location', {})
-
+        
         dicionary, dicionary_courses = read_dicinonary()
+
         setattr(self, 'dicionary', dicionary)
         setattr(self, 'dicionary_courses', dicionary_courses)
 
@@ -132,7 +133,9 @@ class TweetAnalyzer(  AnalyzerAbstract ):
         return kargs
 
     def init(self):
-       
+        
+        print 'Start cache TweetAnalyzer..'
+
         self.get_raw_data()
 
         self.all_word = self.get_values_word( **self.all_word )
@@ -149,7 +152,12 @@ class TweetAnalyzer(  AnalyzerAbstract ):
         self.analyzer_db.save_cache_data('word_count_status_location_user', **self.location_word )
         self.analyzer_db.save_cache_data('word_count_course_word', **self.course_word )
         self.analyzer_db.save_cache_data('word_course_word_status', **self.course_word_status )
-        self.analyzer_db.save_cache_data('word_course_word_location', **self.course_word_location ) 
+        self.analyzer_db.save_cache_data('word_course_word_location', **self.course_word_location )
+
+        print 'Fim cache TweetAnalyzer..'
+
+    def get_data_by_key(self, key):
+        pass
 
 
 if __name__ == '__main__':

@@ -5,16 +5,21 @@ sys.path.append(current_dir + '/connectors/mongo/')
 from analyzerdb import AnalyzerDB
 from twitterdb import TwitterDB
 from datetime import datetime
+from analyzerinterface import AnalyzerInterface
 
 
-class AnalyzerAbstract(object):
+class AnalyzerAbstract(  AnalyzerInterface  ):
 
     def __init__(self):
         setattr(self, 'analyzer_db', AnalyzerDB())
         setattr(self, 'twiter_db', TwitterDB())
+        
 
     def get_raw_data(self, projection):
         raise NotImplementedError()
 
     def init(self):
+        raise NotImplementedError()
+
+    def get_data_by_key(self, key):
         raise NotImplementedError()

@@ -12,6 +12,7 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
         setattr(self, 'created_at', {})
         setattr(self, 'raw_data', {})
 
+
     def get_raw_data(self, projection):
         self.raw_data = {}
         for user_name in self.users_status_name.keys()[:5]:
@@ -107,7 +108,7 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
                
     def init(self):
 
-        #print 'start cache..'
+        print 'start cache StudentsAnalyzer..'
 
         self.users_status_name =  {}
         self.__count_user_status__()
@@ -127,7 +128,12 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
         self.__aggregation_creat_at__()
         self.analyzer_db.save_cache_data('user_status_created_at', **self.created_at ) 
 
-        #print 'Fim cache..'
+        print 'Fim cache StudentsAnalyzer..'
+
+      
+    def get_data_by_key(self, key):
+        pass
+
 
 if __name__ == '__main__':
     StudentsAnalyzer().init()

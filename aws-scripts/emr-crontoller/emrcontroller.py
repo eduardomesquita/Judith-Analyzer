@@ -42,6 +42,7 @@ class EMRController(object):
 
     def save_jobs_emr(self, **kargs):
         self.config_db.save_jobs_upload_EMR( **kargs )
+        self.config_db.save_dust_analyzer( **kargs )
 
     def default_collection_mapper(self):
         return 'scriptsMapper'
@@ -98,4 +99,5 @@ class EMRController(object):
                 files.append( LOCAL_PATH )
 
         return files
+
 
