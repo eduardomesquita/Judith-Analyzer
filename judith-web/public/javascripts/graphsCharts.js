@@ -2,7 +2,7 @@ $(function () {
 
             doGetServer('/porcentStudents', {}, function(data){
 
-                
+                    alert(data);
 
                         $('#container-estudantes').highcharts({
                                 chart: {

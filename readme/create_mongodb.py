@@ -23,9 +23,14 @@ db = client['judith-twitter']
 
 #db.collection.ensureIndex( { a: 1 }, { unique: true, dropDups: true } )
 
+
+db.emrJobsConfig.insert({"name":"find-students", "count":0, "n_instance":1, "region":"sa-east-1", "master_instance":"m1.small", "slaver_instance":"m1.small" })
+db.emrJobsConfig.insert({"name":"word-count", "count":0, "n_instance":1, "region":"sa-east-1", "master_instance":"m1.small", "slaver_instance":"m1.small" })
+
+
+db.studentsCountTweet.ensureIndex( { "userName": 1 }, { unique: true } )
 db.twittersUsers.ensureIndex( { "user.screen_name": 1}, {background: true} )
-db.collection.ensureIndex( { a: 1 }, { unique: true } )
-db.students.ensureIndex( { "userName": 1, "statusStudents" :1 }, { unique: true } )
+db.studentsStatus.ensureIndex( { "userName": 1, "statusStudents" :1 }, { unique: true } )
 db.cacheAnalyzer.ensureIndex( { "name" :1 }, { unique: true } )
 db.wordCountStudents.ensureIndex( { "word": 1, "statusStudents" :1, "create_at": 1, "location" : 1 }, { unique: true } )
 

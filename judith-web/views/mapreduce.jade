@@ -1,0 +1,47 @@
+extends layout
+
+block content
+  div#container 
+
+    div#container 
+    div#accordion.panel-group
+     h3 Meus jobs Elastic MapReduce:
+     - var posicaoEstado = 1
+     each lista,nameJobs in mapreduce
+
+      div.panel.panel-info
+       div.panel-heading
+        h4.panel-title
+         a(data-toggle='collapse', data-parent='#accordion', href=('#' + nameJobs))
+          | #{nameJobs}
+       div(id=nameJobs).panel-collapse.collapse
+        table.table.table-hover
+          tbody
+           tr
+            td.titulo Job Aws ID:
+            td.titulo Status: 
+             i#example.icon-info-sign(title='Se o job terminou ou não sua taregafa.', data-toggle='tooltip')
+            td.titulo Importados:
+            td.titulo Data Execução:
+            td.titulo Duração:
+            td.titulo Nº de Instâncias:
+            td.titulo Cluster:
+            td.titulo Localização:
+            td.titulo Master:
+            td.titulo Slaver:
+
+
+          each item in lista
+           div.panel-body
+            tr 
+             td.capitalize #{item.jobId}
+             td.capitalize #{item.state}
+             td.capitalize #{item.CountDataImport}
+             td.capitalize #{item.date}
+             td.capitalize #{item.runTimeMinutes} Minutos
+             td.capitalize #{item.instance}
+             td.capitalize #{item.cluster}
+             td.capitalize #{item.region}
+             td.capitalize #{item.typeMaster}
+             td.capitalize #{item.typeSlaver}
+            

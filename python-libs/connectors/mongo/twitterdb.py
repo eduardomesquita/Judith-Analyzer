@@ -109,8 +109,23 @@ class TwitterDB( MongoJudithAbstract ):
         return self.find( {'user.screen_name':user_name}, 
                           collection_name = collection_name)
 
-
     def save_key_words_by_username(self, user_name):
         data = {'language' : 'pt', 'keysWords' : [ user_name ], 'last_tweet_text' : '' }
         self.save( data = data, collection_name = self.__default_collection_search_users__() )
         return 'tweet_save'
+
+    def save_key_words(self, **kwords):
+        kwords['last_tweet_text'] = ''
+        self.save(data=kwords,collection_name=self.__default_collection_search__())
+    
+    def get_keys_word(self):
+        return list(self.find_projection(match_criteria={},
+                                         projection={'_id':0},
+                                         collection_name=self.__default_collection_search__()))
+
+    def remove_keyswords(self, array):
+        print 'removendo..'
+        print array
+        match_criteria = {"keysWords" : {'$all' : array} }
+        self.remove( match_criteria=match_criteria,
+                    collection_name=self.__default_collection_search__())

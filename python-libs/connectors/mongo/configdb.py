@@ -25,6 +25,9 @@ class ConfigDB( MongoJudithAbstract ):
     def default_dustAnalyzer(self):
         return 'dustAnalyzer'
 
+    def default_config_emr(self):
+        return 'emrJobsConfig'
+
     def save_jobs_upload_S3(self, **kargs):
         self.save( data=kargs,collection_name=self.default_collection_s3() )
         
@@ -47,7 +50,7 @@ class ConfigDB( MongoJudithAbstract ):
         return self.find({'key' : key_name},
                          collection_name=self.default_parameters_config())
 
-    def find_dust_analyzer(self):
+    def is_dust_analyzed(self):
         return self.find({'status':"MAP_REDUCE"}, 
                          collection_name=self.default_dustAnalyzer())
 
@@ -55,6 +58,26 @@ class ConfigDB( MongoJudithAbstract ):
         match_criteria = {'status':"MAP_REDUCE"}
         updated = {'status':"analyzed"}
         self.update( match_criteria=match_criteria, 
+                     values=updated,
+                     collection_name=self.default_dustAnalyzer(),
+                     upsert = False)
+
+    def get_config_emr(self, name):
+      match_criteria = {'name':name}
+      return self.find(match_criteria,collection_name=self.default_config_emr())
+
+    def update_config_emr(self, name, count):
+      match_criteria = {'name':name}
+      count += 1
+      updated = {'count': count}
+      self.update( match_criteria=match_criteria, 
                    values=updated,
-                   collection_name = self.default_dustAnalyzer(),
+                   collection_name=self.default_config_emr(),
                    upsert = False)
+
+    def get_jobs_emr(self):
+      projection = {'_id':0,'scriptName':0, 
+                   'inputFile':0,'logFile':0,'outputFile':0}
+      return self.find_projection({},
+                                  projection=projection,
+                                  collection_name=self.default_collection_jobs())

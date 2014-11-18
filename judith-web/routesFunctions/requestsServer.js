@@ -9,11 +9,24 @@ module.exports = {
             url: url,
             headers: default_headers,
             method: 'GET'
-        }, function(error, response, body) {
+        } , function(error, response, body) {
             if (!error && response.statusCode === 200) {
                 var json = JSON.parse(body);
                 callback(json);
             }
         });
     },
-};
+
+
+    requestPost : function(url, data, callback) {
+      
+        request.post( url, { form: data },
+                        function (error, response, body) {
+                            if (!error && response.statusCode == 200) {
+                                callback(JSON.parse(body));
+                            }
+                        }
+                      );
+    },
+
+}

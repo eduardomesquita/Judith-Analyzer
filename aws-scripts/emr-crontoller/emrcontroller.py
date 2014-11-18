@@ -13,11 +13,13 @@ import dateutils as date_utils
 
 class EMRController(object):
 
-    def __init__(self):
+    def __init__(self, name_config_emr):
         setattr(self, 'config_db', ConfigDB())
-        setattr(self, 'aws_map_reduce', AwsMapReduce())
         setattr(self, 's3_connector', S3Connector())
         setattr(self, 'analyzer_db', AnalyzerDB())
+        
+        cursor=self.config_db.get_config_emr(name=name_config_emr)
+        setattr(self, 'aws_map_reduce', AwsMapReduce( cursor ))
 
     def start_map_reduce(self):
         raise NotImplementedError()

@@ -134,7 +134,7 @@ button {
 /* ==== Mapreduce Detalhado ====*/
 
 table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):after { 
-    content: " \25B4\25BE" 
+   
 }
 
 table.sortable thead {
@@ -208,11 +208,18 @@ table.sortable thead {
 #myTable.table.table-hover a {
   text-decoration: none;
   color: #424242;
+  text-align:  center;
 }
 
 #myTable.table.table-hover a:hover {
   color: #f9a91d;
 }
+
+.table.table.table-hover tbody tr td{
+  text-align:  center;
+ 
+}
+
 /* ==== Paginacao ====*/
 .pages {
   width: 425px;
@@ -415,39 +422,33 @@ table.sortable thead {
   padding: 0 0 70px 0;
 }
 
-/* ==== Carrinho de Pesquisas ====*/
 
-
-.carrinhoPesquisas {
-  background-color: #e5e4e2;
-  float: right;
-  text-align: center;
-  padding: 3px;
-  position:fixed;
+#tabela{
+  margin-left:  30px;
+  margin-top: 30px;
+  margin-bottom: 20px;
 }
 
-.carrinhoPesquisas p{
-
-    margin-top: 10px;
-    width:  160px;
-}
-.carrinhoPesquisas table {
-   margin-top: 25px;
-   margin-bottom:  3px;
+#tabela table td{
+  padding: 10px;
+  padding-bottom: 0px;
+  text-align:  left;
 }
 
-.carrinhoPesquisas .ocultarCarrinhoPesquisas{
- 
-    font-weight: bold;
+#accordion.panel-group h3{
+  margin-bottom: 30px;
 }
 
-.carrinhoPesquisas a{
-  text-align: right;
-  margin-left: 230px;
-  margin-top: 40px;
+#tabelaFormEstudantes{
+
+   margin-left:36%;
+  margin-top: 30px;
+  margin-bottom: 20px;
+
 }
 
-.carrinhoPesquisas table thead tr th{
-  margin-left:  5px;
-  font-weight: normal;
+#tabelaFormEstudantes table td{
+  padding: 10px;
+  padding-bottom: 0px;
+  text-align:  left;
 }

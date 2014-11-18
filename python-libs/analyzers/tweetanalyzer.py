@@ -1,12 +1,18 @@
-from analyzerabstract import *
+from abstract.analyzerabstract import *
 from sets import Set
-import time
+import time, platform
 from datetime import datetime
 from collections import OrderedDict
 
+if  platform.node() == 'eduardo-linux':
+        PATH = '/home/eduardo/Projetos/TCC/python-libs/analyzers/dictionary/dictionary.txt'
+else:
+        PATH ='/home/eduardo/Projetos/TCC/python-libs/analyzers/dictionary/dictionary.txt'
+
+
 def read_dicinonary():
     words, courses  = {}, {}
-    for word in open('dictionary.txt', 'r'):
+    for word in open(PATH, 'r'):
         word = word.upper().strip()
         if '=' in word:
             ( _, word ) = word.split('=')
@@ -155,10 +161,7 @@ class TweetAnalyzer(  AnalyzerAbstract ):
         self.analyzer_db.save_cache_data('word_course_word_location', **self.course_word_location )
 
         print 'Fim cache TweetAnalyzer..'
-
-    def get_data_by_key(self, key):
-        pass
-
+        
 
 if __name__ == '__main__':
     TweetAnalyzer().init()

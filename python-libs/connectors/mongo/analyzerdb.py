@@ -11,8 +11,11 @@ class AnalyzerDB( MongoJudithAbstract ):
     def default_collection_name(self):
         raise NotImplementedError()
 
-    def default_students_collections_name(self):
-        return 'students'
+    def default_students_status(self):
+        return 'studentsStatus'
+
+    def default_students_count_tweet(self):
+        return 'studentsCountTweet'
 
     def default_students_collections_word_count(self):
         return 'wordCountStudents'
@@ -27,7 +30,7 @@ class AnalyzerDB( MongoJudithAbstract ):
 
     def get_raw_data_students(self):
         return self.find(match_criteria={},
-                        collection_name=self.default_students_collections_name() )
+                        collection_name=self.default_students_status() )
 
     def get_raw_data_tweets(self, projection):
         return self.find_projection(match_criteria={},
@@ -57,14 +60,14 @@ class AnalyzerDB( MongoJudithAbstract ):
                      'count':count,
                      'create_at': create_at }
             self.save( data=data, 
-                       collection_name=self.default_students_collections_name())
+                       collection_name=self.default_students_status())
 
         except pymongo.errors.DuplicateKeyError:
             match_criteria = {'userName': user_name,'statusStudents': status}
             values = {'count':count}
             self.update( match_criteria=match_criteria,
                          values=values,
-                         collection_name=self.default_students_collections_name(),
+                         collection_name=self.default_students_status(),
                          upsert = False)
 
 
@@ -79,3 +82,24 @@ class AnalyzerDB( MongoJudithAbstract ):
 
         except pymongo.errors.DuplicateKeyError:
             pass
+
+
+    def save_students_count_tweet(self, **kargs ):
+        try:
+            self.save( data=kargs, 
+                       collection_name=self.default_students_count_tweet())
+
+        except pymongo.errors.DuplicateKeyError:
+            match_criteria = {'userName': kargs['userName']}
+            values = {  'statusUsers':kargs['statusUsers'], 
+                        'totalTweet':kargs['totalTweet'],
+                        'location':kargs['location']}
+            self.update( match_criteria=match_criteria,
+                         values=values,
+                         collection_name=self.default_students_count_tweet(),
+                         upsert = False)
+
+
+    def get_students_count_tweet(self, status):
+        return self.find_projection( {'statusUsers':status},{'_id':0}, collection_name=self.default_students_count_tweet())
+          

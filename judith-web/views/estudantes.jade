@@ -1,0 +1,47 @@
+extends layout
+block content
+    script(src='/plugins/sortable.js')
+    script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js')
+    script(src='/javascripts/midiassociais.js')
+    script(src='/javascripts/requestsServer.js')
+
+    - var chave;
+    div#container
+
+        div#tabelaDetalhada
+            h3 Tweets de estudantes e possíveis:
+            form(action='/findestudantes',method='post')
+                div#tabelaFormEstudantes
+                    table(id='tabelaFormEstudante')
+                        th
+                          td
+                                select(name='status' )
+                                    option(value='student',selected='estudante') Estudantes
+                                    option(value='possible',) Possíveis estudantes
+                            td
+                                input(type='image', src='/images/pesquisar.png' alt='WWSubmit Form')
+
+            div#bordaTabela
+                table.sortable#myTable.table.table-hover
+                    thead
+                        tr
+                            each campo in campos
+                                td
+                                th.capitalize #{campo}
+                            th Visuzalizar Tweets
+
+                            td
+                    tbody
+                        each dado in resultado
+                            tr
+                                td 
+                                th.values  #{dado.status}
+                                td 
+                                th.values #{dado.usuario}
+                                td 
+                                th.values #{dado.location}
+                                td
+                                th.values #{dado.total}
+
+                                td
+                                    input(type='image', src='/images/apagar.png', onclick="excluirPalavra('#{dado.palavra}')")

@@ -1,6 +1,6 @@
 import time
 from datetime import datetime
-from analyzerabstract import *
+from abstract.analyzerabstract import *
 
 class StudentsAnalyzer(  AnalyzerAbstract ):
 
@@ -15,10 +15,10 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
 
     def get_raw_data(self, projection):
         self.raw_data = {}
-        for user_name in self.users_status_name.keys()[:5]:
+        for user_name in self.users_status_name.keys():
 
             self.raw_data[user_name] = []
-            for cursor in self.twiter_db.get_raw_data_users( user_name=user_name,
+            for cursor in self.twitter_db.get_raw_data_users( user_name=user_name,
                                                              projection=projection):
                 for bjson in list(cursor):
                     self.raw_data[user_name].append(bjson)
@@ -129,11 +129,6 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
         self.analyzer_db.save_cache_data('user_status_created_at', **self.created_at ) 
 
         print 'Fim cache StudentsAnalyzer..'
-
-      
-    def get_data_by_key(self, key):
-        pass
-
 
 if __name__ == '__main__':
     StudentsAnalyzer().init()
