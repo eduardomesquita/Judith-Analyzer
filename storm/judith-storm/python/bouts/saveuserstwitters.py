@@ -22,18 +22,25 @@ class SaveUsersTwitters( storm.BasicBolt ):
     def process(self, tupla):
         
         tweet = tupla.values[0]
-        if tweet.has_key('erro') or tweet.has_key('twetter-status') :
-           storm.emit( [ tweet ] )
-        else:
+        if not tweet.has_key('erro') and not tweet.has_key('twetter-status') :
+
             utils = TwitterJsonUtils()
+            db = TwitterDB()
+
             tweet_json = utils.remove_invalid_fields_from_json( tweet['json'] )
+
             try:
-                db = TwitterDB()
+               
                 user_name = tweet_json['user']['screen_name']
-                response = db.save_key_words_by_username( user_name  )
-                storm.emit( [ {'twetter-status-urser' : user_name} ] )
+                db.save_key_words_by_username( user_name  )
+                storm.emit( [ {'twetter-status-urser' : user_name ,'response': 'SALVO'} ] )
+
+            except pymongo.errors.DuplicateKeyError as err:
+                pass
+
             except Exception as ex:
                storm.emit( [ { 'erro' : '%s;%s'%(ex, tweet_json), 'CLASS' : 'SaveUsersTwitters' } ] )
+
 
 
 log = logging.getLogger('processaJson')

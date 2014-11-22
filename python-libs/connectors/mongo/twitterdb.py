@@ -95,13 +95,9 @@ class TwitterDB( MongoJudithAbstract ):
             
     def save_twitter(self, json_twitter, method):
         collection_name = self.__get_collections_tweet_by_method__( method )
-        try:
-            self.save( data = json_twitter, 
-                       collection_name = collection_name )
-            return 'tweet_save'
-        except pymongo.errors.DuplicateKeyError as err:
-            return err
-
+        self.save( data = json_twitter, collection_name = collection_name )
+            
+   
     def find_raw_data_users(self, collection_name, skip, limit):
         return self.find( {},  collection_name = collection_name).skip( skip ).limit( limit )
 
@@ -112,8 +108,7 @@ class TwitterDB( MongoJudithAbstract ):
     def save_key_words_by_username(self, user_name):
         data = {'language' : 'pt', 'keysWords' : [ user_name ], 'last_tweet_text' : '' }
         self.save( data = data, collection_name = self.__default_collection_search_users__() )
-        return 'tweet_save'
-
+     
     def save_key_words(self, **kwords):
         kwords['last_tweet_text'] = ''
         self.save(data=kwords,collection_name=self.__default_collection_search__())

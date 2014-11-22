@@ -14,47 +14,52 @@ from jsonutils import TwitterJsonUtils
 from redisjudith import RedisJudith
 import pymongo
 
-class ProcessaTwitters( storm.BasicBolt ):
+class SaveTwitter( storm.BasicBolt ):
 
     @classmethod
     def declareOutputFields(cls):
         return ['json']
 
     @classmethod
+    def __update_duplicate__(self, tweet):
+        redis = RedisJudith()    
+        user_name = tweet['user']['screen_name']
+        redis.set(name=user_name, value='DUPLICATE' )
+        storm.emit( [ {'twetter-status': 'DUPLICATE', 'user' : user_name } ] )
+    
+
+    @classmethod
     def process(self, tupla):
         
         tuples = tupla.values[0]
 
-        if tuples.has_key('erro') or tuples.has_key('twetter-status') :
-           storm.emit( [ tuples ] )
-        else:
-
+        if not tuples.has_key('erro') and not tuples.has_key('twetter-status') :
+   
             tweet = tuples['json']
             method = tuples['method']
 
             utils = TwitterJsonUtils()
+            db = TwitterDB()
+
             tweet_json = utils.remove_invalid_fields_from_json( tweet )
             try:
 
-                db = TwitterDB()
-                response = db.save_twitter( tweet_json, method )
+                db.save_twitter( tweet_json, method )
+
                 if method == 'by_tags':
-                    storm.emit( [ {'json': tweet, 'response' : response } ] )
+                    ## SALVA SOMENTE USERS TWEET BY TAGS
+                    storm.emit( [ {'json': tweet, 'response' : 'SALVO' } ] )
                 else:
-                    storm.emit( [ {'twetter-status': 'BY_USER_NAO_SALVO', 'response' : response } ] )
+                    storm.emit( [ {'twetter-status': 'BY_USER_NAO_SALVO', 'response' : 'SALVO' } ] )
 
                   
             except pymongo.errors.DuplicateKeyError as err:
-                ''' salva usename para envitar testar duplicados ''' 
-                user_name = tweet['user_name']['screen_name']
-                redis = RedisJudith()
-                redis.set(name=user_name, value='DUPLICATE' )
-                storm.emit( [ { 'erro' : 'duplicate %s' % (user_name) } ])
-   
+                SaveTwitter.__update_duplicate__( tweet )
+
             except Exception as ex:
-                storm.emit( [ { 'erro' : '%s;%s'%(ex, tweet_json), 'CLASS' : 'ProcessaTwitters'} ] )
+                storm.emit( [ { 'erro' : '%s;%s'%(ex, tweet_json), 'CLASS' : 'SaveTwitter'} ] )
 
 
 log = logging.getLogger('processaJson')
 log.debug('ProcessaJson loading')
-ProcessaTwitters().run()
+SaveTwitter().run()

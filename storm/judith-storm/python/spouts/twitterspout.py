@@ -15,40 +15,67 @@ from redisjudith import RedisJudith
 
 class TwitterSpout(storm.Spout):
 
+
+    @classmethod
+    def __update_last_tweet__(self, twitter_db, keysWords, content, method):
+        twitter_db.update_last_twitter( keysWords, content, method)
+
     @classmethod
     def __check_is_new_twitter__(self, search, twitter_db, method):
 
-        tweets = []
-        content = None
-        twitter_api = TwitterApi()
         try:
+
+            tweets = []
+            content = None
+            twitter_api = TwitterApi()
+
             generator_tweet = twitter_api.find_hashtags( keys_words = search['keysWords'],
                                                          language = search['language'],
                                                          qtd_page = 100 )
             content = generator_tweet.next()
-            if twitter_db.is_new_tweet( search['keysWords'], content['text'], method ) is True:
-                twitter_db.update_last_twitter( search['keysWords'], content['text'], method)
+            new_tweet = twitter_db.is_new_tweet( search['keysWords'], content['text'], method )
+
+            if new_tweet  is True:
+                TwitterSpout.__update_last_tweet__( twitter_db=twitter_db,
+                                                    keysWords=search['keysWords'],
+                                                    content=content['text'],
+                                                    method=method)
                 while content:
                     tweets.append( content )
                     content = generator_tweet.next()
+
         except StopIteration as ex:
             pass
-
         return tweets
 
+
     @classmethod
-    def __check_duplicate_tweet__(self, redis, user_name, start):
-        if start is True:
+    def __clear_duplicate__(self, news_tweets, redis):
+        for tweet_json in news_tweets:
+            user_name = tweet_json['user']['screen_name']
             redis.delete(name=user_name)
-            return True
-        else:
-            status_redis = redis.get(name=user_name)
-            if status_redis is None:
-                return True
-            elif status_redis == 'DUPLICATE':
-                return False
+
+    @classmethod
+    def __check_duplicate_tweet__(self, redis, user_name):
+
+        status_redis = redis.get(name=user_name)
+        if status_redis is None:
+            return True 
+        return False
+
+    @classmethod
+    def __emit_tweets__(self, news_tweets, redis, search, method):
+        for tweet_json in news_tweets:
+            user_name = tweet_json['user']['screen_name']
+            duplicate = TwitterSpout.__check_duplicate_tweet__( redis=redis,
+                                                                user_name=user_name )
+            if duplicate is True:
+                storm.emit( [ {'KEYWORDS' : search['keysWords'], 'json': tweet_json,  'method': method }] )
+                time.sleep(1)
             else:
-                return True
+                storm.emit( [ { 'twetter-status' : 'DUPLICATE', 'keys_words' : search['keysWords'] }] )
+                break
+
 
     @classmethod
     def __find_tweets__(self, twitter_db, method):
@@ -57,42 +84,36 @@ class TwitterSpout(storm.Spout):
         tags_generator = twitter_db.find_tags_search( method )
 
         for search in tags_generator:
-            tweet_iter = TwitterSpout.__check_is_new_twitter__( search,twitter_db,
-                                                                method)
-            if len(tweet_iter) > 0:
-                start = True
-                for tweet_json in tweet_iter:
-                    user_name = tweet_json['user']['screen_name']
-                    check_duplicate = self.__check_duplicate_tweet__( redis, user_name,
-                                                                      start)
-                    if check_duplicate is True:
-                        storm.emit( [ {'json': tweet_json,
-                                       'method': method }] )
-                        time.sleep(1)
-                        start = False
-                    else:
-                        storm.emit( [ { 'twetter-status' : 'duplicate',
-                                        'keys_words' : search['keysWords'] }] )
+            news_tweets = TwitterSpout.__check_is_new_twitter__( search=search,
+                                                                 twitter_db=twitter_db,
+                                                                 method=method )
+            if len(news_tweets) > 0:
+
+                TwitterSpout.__clear_duplicate__( news_tweets=news_tweets,
+                                                  redis=redis )
+
+                TwitterSpout.__emit_tweets__( news_tweets=news_tweets, 
+                                              redis=redis, search=search,
+                                              method=method)
             else:
-                storm.emit( [ { 'twetter-status' : 'sem atualizacao',
-                                'keys_words' : search['keysWords'] }] )
+                storm.emit( [ { 'twetter-status' : 'sem atualizacao', 'keys_words' : search['keysWords'] }] )
+
             time.sleep(60)
 
     @classmethod
     def nextTuple(self):
-        try:
+        #try:
             
             twitter_db = TwitterDB()
             for method in ['by_tags','by_users']:
-                tweet_iter = TwitterSpout.__find_tweets__( twitter_db, 
-                                                           method )
-            time.sleep( 6000 )
-        except Exception as ex:
-            storm.emit( [ { 'erro' : '%s' % ex , 'CLASS' : 'FilterTwitter'}] )
-            time.sleep( 60 )
+                TwitterSpout.__find_tweets__( twitter_db=twitter_db, method=method )
+                
+        #except Exception as ex:
+        #    storm.emit( [ { 'erro' : '%s' % ex , 'CLASS' : 'FilterTwitter'}] )
+        #    time.sleep( 60 )
+
 
 if __name__ == '__main__':
-    
     log = logging.getLogger('TwitterSpout')
     log.debug('TwitterSpout loading...')
     TwitterSpout().run()
