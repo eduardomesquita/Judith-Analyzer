@@ -3,6 +3,7 @@ import json, pymongo
 from mongojudith import *
 import sys, pymongo
 
+
 class AnalyzerDB( MongoJudithAbstract ):
 
     def __init__(self, ):

@@ -2,7 +2,7 @@ extends layout
 block content
     script(src='/plugins/sortable.js')
     script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js')
-    script(src='/javascripts/midiassociais.js')
+    script(src='/javascripts/estudantes.js')
     script(src='/javascripts/requestsServer.js')
 
     - var chave;
@@ -28,7 +28,9 @@ block content
                             each campo in campos
                                 td
                                 th.capitalize #{campo}
-                            th Visuzalizar Tweets
+                            th Visualizar
+
+                            th Add BlackList
 
                             td
                     tbody
@@ -44,4 +46,7 @@ block content
                                 th.values #{dado.total}
 
                                 td
-                                    input(type='image', src='/images/apagar.png', onclick="excluirPalavra('#{dado.palavra}')")
+                                    input(type='image', src='/images/add2.png', onclick="visualizarEstudantes('#{dado.usuario}')")
+
+                                td
+                                    input(type='image', src='/images/apagar.png', onclick="insereBlackList('#{dado.usuario}')")

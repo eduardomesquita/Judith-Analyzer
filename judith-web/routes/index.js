@@ -1,15 +1,25 @@
+IP = '0.0.0.0'
+PORT = '5222'
+SERVER = IP+':'+PORT
 
-__URL_PORCENT_STUDENTS__ = 'http://0.0.0.0:5222/api/v.1/students/porcentStatus'
-__URL_GET_KEYWORDS__     = 'http://0.0.0.0:5222/api/v.1/mediassocais/getkeywords'
-__URL_DELETE_KEYWORDS__  = 'http://0.0.0.0:5222/api/v.1/mediassocais/excluirKeywords'
-__URL_SALVAR_KEYWORDS__  = 'http://0.0.0.0:5222/api/v.1/mediassocais/salvarKeywords'
-__URL_GET_MAP_REDUCE__   = 'http://0.0.0.0:5222/api/v.1/mapreduce/getmapreduces'
-__URL_FIND_STUDENTS__    = 'http://0.0.0.0:5222/api/v.1/estudantes/getstatusestudantes'
+URL_GET_PORCENT_STUDENTS = 'http://'+SERVER+'/api/v.1/graphs/estudantes/porcentStatus'
+URL_GET_KEYWORDS         = 'http://'+SERVER+'/api/v.1/mediassocais/get/tweet/keywords'
+URL_DELETE_KEYWORDS      = 'http://'+SERVER+'/api/v.1/mediassocais/delete/tweet/Keywords'
+URL_SAVE_KEYWORDS        = 'http://'+SERVER+'/api/v.1/mediassocais/save/tweet/keywords'
+URL_GET_MAP_REDUCE       = 'http://'+SERVER+'/api/v.1/mapreduce/get/mapreduces'
+URL_FIND_STUDENTS        = 'http://'+SERVER+'/api/v.1/estudantes/get/status/<params>'
+URL_FIND_TWEET_USER      = 'http://'+SERVER+'/api/v.1/estudantes/get/tweet/usersname/<params>'
+URL_INSERE_BLACKLIST     = 'http://'+SERVER+'/api/v.1/estudantes/blacklist/usersname/'
+URL_GET_BLACKLIST        = 'http://'+SERVER+'/api/v.1/estudantes/get/blacklist/'
+URL_REMOVE_BLACKLIST     = 'http://'+SERVER+'/api/v.1/estudantes/remove/blacklist/'
+
+
 
 module.exports = function(app, passport){
 	
 	var loginUtilities = require ("../routesFunctions/login.js");
 	var requestUtilies = require ("../routesFunctions/requestsServer.js");
+	var estudanteController = require ("../routesFunctions/estudantesController.js");
 	var express = require('express');
 	var router = express.Router();
 
@@ -51,8 +61,8 @@ module.exports = function(app, passport){
 	});
 
 	router.get('/midiassociais', function(req, res){
-			url = __URL_GET_KEYWORDS__;
-		 	requestUtilies.request( url, function( json_resquests ){
+		
+		 	requestUtilies.request(URL_GET_KEYWORDS, function( json_resquests ){
 
 			response_json = [];
 			media_social = 'TWITTER';
@@ -81,8 +91,7 @@ module.exports = function(app, passport){
 	});
 
 	router.post('/excluirpesquisamidia' ,function(req, res){
-			url = __URL_DELETE_KEYWORDS__;
-			requestUtilies.requestPost( url, req.body, function( json_resquests ){
+			requestUtilies.requestPost(URL_DELETE_KEYWORDS, req.body, function( json_resquests ){
 			if(json_resquests.status == 'ok'){
 					res.json({ 'response' : json_resquests.status });
 			 }
@@ -92,8 +101,8 @@ module.exports = function(app, passport){
 
 
 	router.post('/salvarpesquisamidia' ,function(req, res){
-		url = __URL_SALVAR_KEYWORDS__ 
-		requestUtilies.requestPost( url, req.body, function( json_resquests ){
+
+		requestUtilies.requestPost(URL_SAVE_KEYWORDS, req.body, function( json_resquests ){
 			if(json_resquests.status == 'ok'){
 				res.redirect('/midiassociais')
 			 }
@@ -102,29 +111,30 @@ module.exports = function(app, passport){
 
 
 	router.get('/mapreduce', function(req, res){
-		
-		url = __URL_GET_MAP_REDUCE__;
 		mapreduce = {};
-
-		requestUtilies.request( url, function( json_resquests ){
-
+		requestUtilies.request(URL_GET_MAP_REDUCE, function( json_resquests ){
 			for(i in json_resquests){
-
 				nome = json_resquests[i].emr_name;
 				mapreduce[nome] = [json_resquests[i]];
-				
 			}
 			res.render('mapreduce', {'mapreduce' : mapreduce});
-
 		});
 	});
 
 
+	router.post('/estudantesPost', function(req, res){
+		res.redirect('/estudantes')
+	});
+
 	router.get('/estudantes', function(req, res){
-		res.render('estudantes', {		
-									'selected' : 'Estudantes',
-									'resultado' : {},
-									'campos' : ['Status' , 'Usuario', 'Cidade', 'Total tweets']});
+		url = URL_FIND_STUDENTS.replace(/<params>/g,'student');
+		requestUtilies.request( url, function( json_resquests ){
+			resultado = estudanteController.getEstudantesByStatus( json_resquests);
+			res.render('estudantes', {		
+								'selected' : 'Estudantes',
+								'resultado' : resultado,
+								'campos' : ['Status' , 'Usuário', 'Cidade', 'Total tweets']});
+		});
 	});
 
 
@@ -133,61 +143,77 @@ module.exports = function(app, passport){
 	});
 
 	router.post('/findestudantes', function(req, res){
-
-		url = __URL_FIND_STUDENTS__ + '/' + req.body.status
-		
+		url = URL_FIND_STUDENTS.replace(/<params>/g,  req.body.status);
 		requestUtilies.request( url, function( json_resquests ){
 
-		    resultado  = []
-			for(i in json_resquests){
-				json_tmp = {}
-				json_tmp.usuario = json_resquests[i].userName;
-
-				console.log(json_resquests[i].status);
-				if(json_resquests[i].statusUsers == 'student')
-					json_tmp.status = 'ESTUDANTE';
-				else if(json_resquests[i].statusUsers == 'possible')
-					json_tmp.status = 'POSSIVEL ESTUDANTE';
-
-				json_tmp.total = json_resquests[i].totalTweet;
-				json_tmp.location = json_resquests[i].location;
-
-				resultado.push(json_tmp);
-			}
-
-
+			resultado = estudanteController.getEstudantesByStatus( json_resquests);
 			res.render('estudantes', {		
 								'selected' : 'Estudantes',
 								'resultado' : resultado,
-								'campos' : ['Status' , 'Usuario', 'Cidade', 'Total tweets']});
+								'campos' : ['Status' , 'Usuário', 'Cidade', 'Total tweets']});
+		});
+	});
 
+	router.post('/visualizarestudantes', function(req, res){
+		
+		url = URL_FIND_TWEET_USER.replace(/<params>/g, req.body.usuario);
+		requestUtilies.request(url, function( json_resquests ){
+			res.render('tweetsusers',{ "resultado" : json_resquests, "user" :req.body.usuario});
 		});
 
+	});
+
+
+
+
+
+
+
+	router.post('/insereusuarioblacklist', function(req, res){
+
+		requestUtilies.requestPost(URL_INSERE_BLACKLIST, req.body, function( json_resquests ){
+			if(json_resquests.status == 'ok'){
+				res.json( json_resquests );
+			 }
+	    });
+
+	});
+
+
+	router.get('/blacklist', function(req, res){
 		
+		requestUtilies.request(URL_GET_BLACKLIST,function( json_resquests ){
+			res.render('blacklist',{ "resultado" : json_resquests, 'campos' : ['Usuário', 'Data Inserção']});
+	    });
+
+	});
+
+
+	router.post('/removeblacklist', function(req, res){
+		
+		requestUtilies.requestPost(URL_REMOVE_BLACKLIST, req.body, function( json_resquests ){
+			if(json_resquests.status == 'ok'){
+				res.json( json_resquests );
+			 }
+	    });
+
+	});
+
+	router.get('/configuracoes', function(req, res){
+		res.render('configuracoes',{});
 	});
 
 	
 
-
-
-
-
 	router.get('/porcentStudents', function(req, res){
-		url = __URL_PORCENT_STUDENTS__;
-		requestUtilies.request( url, function( json_resquests ){
 
-			response=json_resquests;	
-			
-		 	response['total'] = parseInt(json_resquests['possible'])  +
-		 						parseInt(json_resquests['student']); 
+		requestUtilies.request(URL_GET_PORCENT_STUDENTS, function( json_resquests ){
+			response=json_resquests;
+		 	response['total'] = parseInt(json_resquests['possible'])  + parseInt(json_resquests['student']); 
 		 	res.json({ 'response' : response });	
 		});
 	});
 
 
-
-	
-
-	app.use('/',router);
-	
+	app.use('/',router);	
 }

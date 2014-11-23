@@ -1,0 +1,89 @@
+extends layout
+block content
+    script(src='/plugins/sortable.js')
+    script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js')
+    script(src='/javascripts/midiassociais.js')
+    script(src='/javascripts/requestsServer.js')
+
+    div#container
+
+    div#tabelaDetalhada
+        h3 Configurações do Provedor:
+        form(action='/aindanaosei',method='post')
+
+        div#provider
+            table(id='tabelaprovider')
+                th
+                    td 
+                        label(for='cloud') Cloud:
+                    td
+                        select(name='cloud' )
+                            option(value='aws', selected='aws') AWS - Amazon
+
+        div#h3T
+            h3 Cluster
+        div#Input
+
+            table(id='tabelaInputs')
+                tr
+                    th
+                        td 
+                            label(for='cloud') Framework:
+                        td
+                            select(name='hadoop' )
+                                option(value='hadoop', selected='hadoop') Apache Hadoop
+
+                        td 
+                            label(for='localizao') Localização:
+                        td
+                            select(name='Localização' )
+                                option(value='ap-northeast-1') Singapore
+                                option(value='ap-southeast-1') Tokyo
+                                option(value='ap-southeast-2') Sydney
+                                option(value='DEFAULT') DEFAULT
+                                option(value='EU') Frankfurt
+                                option(value='sa-east-1' selected='USWest2') São Paulo
+                                option(value='us-west-1') N. California
+
+                        td 
+                            label(for='cloud') Inst. Slave:
+                        td
+                            select(name='masteInstancia' )
+                                option(value='m1.small', selected='masteInstancia') m1.small
+                                option(value='m3.medium') m3.large
+                                option(value='m3.large') m3.large
+                                option(value='m3.large') m3.xlarge
+                                option(value='m3.2xlarge') m3.2xlarge
+                                option(value='c3.large') c3.large
+                                option(value='c3.large') c3.large
+                                option(value='c3.2xlarge') c3.2xlarge
+                                option(value='c3.4xlarge') c3.4xlarge
+                                option(value='c3.8xlarge') c3.8xlarge
+
+                tr
+                    th
+                        td 
+                            label(for='cloud') Armazenamento:
+                        td
+                            select(name='S3' )
+                                option(value='S3', selected='S3') Amazon S3
+
+                        td 
+                            label(for='cloud') Inst. Master:
+                        td
+                            select(name='salveInstancia' )
+                                option(value='m1.small', selected='masteInstancia') m1.small
+                                option(value='m3.medium') m3.large
+                                option(value='m3.large') m3.large
+                                option(value='m3.large') m3.xlarge
+                                option(value='m3.2xlarge') m3.2xlarge
+                                option(value='c3.large') c3.large
+                                option(value='c3.large') c3.large
+                                option(value='c3.2xlarge') c3.2xlarge
+                                option(value='c3.4xlarge') c3.4xlarge
+                                option(value='c3.8xlarge') c3.8xlarge
+
+        div#h3T
+            h3 Map Reduce
+
+               

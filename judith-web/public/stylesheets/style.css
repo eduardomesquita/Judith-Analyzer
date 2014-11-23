@@ -27,7 +27,7 @@ table tbody tr.selected td {
   float: left;
   width: 245px;
   height: 70px;
-  background: url(../images/logo.png) top center no-repeat;
+  background: url(../images/logoJudith.png) top center no-repeat;
   text-indent: -99999px;
   margin: 8px 0 0 0;
 }
@@ -204,6 +204,8 @@ table.sortable thead {
   background: url(../images/loading.gif) top center no-repeat;
   padding: 0 0 60px 0;
 }
+
+
 
 #myTable.table.table-hover a {
   text-decoration: none;
@@ -447,8 +449,74 @@ table.sortable thead {
 
 }
 
+#tabelaBlacklist{ 
+
+  margin-top: 30px;
+}
+
+
+#myTable.table.table-hover thead tr th{
+
+    font-size: 17px;
+}
+
+#myTable.table.table-hover tbody tr th{
+    text-decoration:  none;
+    font-size: 15px;
+}
+
+
+#myTableEstudante.table.table-hover tbody tr th{
+  padding: 10px;
+  width: 80%;
+}
+
+#myTableBlacklist.table.table-hover thead tr th{
+  padding-left: 10%;
+}
+
+
+#myTableBlacklist.table.table-hover tbody tr th{
+ padding-left: 10%;
+}
+
 #tabelaFormEstudantes table td{
   padding: 10px;
   padding-bottom: 0px;
   text-align:  left;
 }
+
+
+#provider {
+  margin-top: 3%;
+  margin-left: 38%;
+
+}
+
+#provider table tbody tr td{
+   width: 49px;
+
+}
+
+
+#Input{
+
+margin-top: 2%;
+margin-left: 2%;
+}
+
+#h3T{
+  margin-top: 3%;
+  margin-bottom: 2%;
+}
+#Input table{
+
+  border-collapse: separate;
+  border-spacing: 40px 5px;
+
+}
+
+#Input table tbody tr td{
+width: 75px;
+}
+

@@ -3,8 +3,10 @@ import sys, pymongo
 current_dir =  '/'.join( sys.path[0].split('/')[:-1] )
 sys.path.append(current_dir + '/connectors/mongo/')
 sys.path.append(current_dir + '/aws-api/')
+sys.path.append(current_dir + '/utils/')
 from analyzerdb import AnalyzerDB
 from twitterdb import TwitterDB
+import dateutils as date_utils
 
 class BlackListTweet(object):
 
@@ -21,6 +23,7 @@ class BlackListTweet(object):
             print search['keysWords'][0]
             if search['keysWords'][0] not in kargs.keys():
                 data = {'username' : search['keysWords'][0]}
+                data['created_at'] = date_utils.current_time()
                 try:
                     print 'inserindo na black_list %s' % search['keysWords'][0]
                     self.twitter_db.insert_user_name_in_black_list( **data )

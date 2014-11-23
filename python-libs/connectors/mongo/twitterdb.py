@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import json, pymongo
 from mongojudith import *
 
+
 class TwitterDB( MongoJudithAbstract ):
 
     def __init__(self, ):
@@ -11,57 +12,73 @@ class TwitterDB( MongoJudithAbstract ):
     def default_collection_name(self):
         return 'twittersTags'
 
-    def __default_collection_tweet_users__(self):
+    def collection_tweet_users(self):
         return 'twittersUsers'
 
-    def __default_collection_search__(self):
+    def collection_search_tags(self):
         return 'searchTags'
 
-    def __default_collection_search_users__(self):
+    def collection_search_users(self):
         return 'searchUsers'
 
-    def __default_collection_black_list__(self):
+    def collection_black_list(self):
         return 'blacklist'
+
+
 
     def __get_collections_search_by_method__(self, method):
         if method == 'by_tags':
-            return self.__default_collection_search__()
+            return self.collection_search_tags()
         elif method == 'by_users':
-            return self.__default_collection_search_users__()
+            return self.collection_search_users()
 
     def __get_collections_tweet_by_method__(self, method):
         if method == 'by_tags':
             return self.default_collection_name()
         elif method == 'by_users':
-            return self.__default_collection_tweet_users__()
+            return self.collection_tweet_users()
+
+
+
 
 
     def get_raw_data_users(self, user_name, projection):
         cursors = []
         for collection_name in [self.default_collection_name(),
-                                self.__default_collection_tweet_users__()]:
+                                self.collection_tweet_users()]:
             cursor = self.find_projection( match_criteria={'user.screen_name': user_name},
                                            projection=projection,
                                            collection_name=collection_name)
             cursors.append(cursor)
         return cursors
 
-    def find_user_name_black_list(self, user_name):
-        return self.find({'username':user_name}, 
-                         collection_name=self.__default_collection_black_list__())
 
     def remove_user_name_search(self, user_name):
         self.remove( match_criteria={'keysWords' : [ user_name ]},
-                     collection_name=self.__default_collection_search_users__() )
+                     collection_name=self.collection_search_users() )
+
+
 
     def insert_user_name_in_black_list(self, **kargs):
         self.save( data=kargs,
-                   collection_name=self.__default_collection_black_list__())
+                   collection_name=self.collection_black_list())
+
+    def find_user_name_black_list(self, user_name):
+        return self.find({'username':user_name}, 
+                         collection_name=self.collection_black_list())
+
+    def find_all_data_black_list(self):
+        return self.find({}, collection_name=self.collection_black_list())
+
+    def remove_black_list(self, **match_criteria):
+        return self.remove(match_criteria, collection_name=self.collection_black_list())
+
+
 
     def find_all_search_users(self):
         match_criteria ={'last_tweet_text' : { '$ne' : '' }} 
         return self.find( match_criteria=match_criteria,
-                          collection_name=self.__default_collection_search_users__())
+                          collection_name=self.collection_search_users())
 
 
     def find_tags_search(self, method):
@@ -101,26 +118,28 @@ class TwitterDB( MongoJudithAbstract ):
     def find_raw_data_users(self, collection_name, skip, limit):
         return self.find( {},  collection_name = collection_name).skip( skip ).limit( limit )
 
-    def find_raw_data_users_by_username(self,user_name, collection_name):
+    def find_raw_data_users_by_username(self, user_name, collection_name):
         return self.find( {'user.screen_name':user_name}, 
                           collection_name = collection_name)
 
+    def find_raw_data_users(self, user_name):
+        return self.find( {'user.screen_name':user_name}, 
+                          collection_name=self.collection_tweet_users())
+
     def save_key_words_by_username(self, user_name):
         data = {'language' : 'pt', 'keysWords' : [ user_name ], 'last_tweet_text' : '' }
-        self.save( data = data, collection_name = self.__default_collection_search_users__() )
+        self.save( data = data, collection_name = self.collection_search_users() )
      
     def save_key_words(self, **kwords):
         kwords['last_tweet_text'] = ''
-        self.save(data=kwords,collection_name=self.__default_collection_search__())
+        self.save(data=kwords,collection_name=self.collection_search_tags())
     
     def get_keys_word(self):
         return list(self.find_projection(match_criteria={},
                                          projection={'_id':0},
-                                         collection_name=self.__default_collection_search__()))
+                                         collection_name=self.collection_search_tags()))
 
     def remove_keyswords(self, array):
-        print 'removendo..'
-        print array
         match_criteria = {"keysWords" : {'$all' : array} }
         self.remove( match_criteria=match_criteria,
-                    collection_name=self.__default_collection_search__())
+                    collection_name=self.collection_search_tags())

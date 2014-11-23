@@ -1,0 +1,38 @@
+extends layout
+block content
+    script(src='/plugins/sortable.js')
+    script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js')
+    script(src='/javascripts/midiassociais.js')
+    script(src='/javascripts/requestsServer.js')
+    script(src='/javascripts/backlist.js')
+
+    
+
+    - var chave;
+    div#container
+
+        div#tabelaDetalhada
+            h3 Blacklist usuários do Twitter:
+
+            div#tabelaBlacklist
+                div#bordaTabela
+                    table.sortable#myTableBlacklist.table.table-hover
+                        thead
+                            tr
+                                each campo in campos
+                                    td
+                                    th.capitalize #{campo}
+                                th Remover
+
+                                td
+                        tbody
+                            each dado in resultado
+                                tr
+                                    td 
+                                    th.values  #{dado.username}
+                                    td
+                                    th.values #{dado.created_at}
+
+                                    td
+                                        input(type='image', src='/images/apagar.png', onclick="removeUsername('#{dado.username}')")
+                            
