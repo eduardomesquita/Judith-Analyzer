@@ -40,8 +40,6 @@ class TwitterDB( MongoJudithAbstract ):
 
 
 
-
-
     def get_raw_data_users(self, user_name, projection):
         cursors = []
         for collection_name in [self.default_collection_name(),
@@ -115,7 +113,7 @@ class TwitterDB( MongoJudithAbstract ):
         self.save( data = json_twitter, collection_name = collection_name )
             
    
-    def find_raw_data_users(self, collection_name, skip, limit):
+    def find_raw_data_users_paginator(self, collection_name, skip, limit):
         return self.find( {},  collection_name = collection_name).skip( skip ).limit( limit )
 
     def find_raw_data_users_by_username(self, user_name, collection_name):

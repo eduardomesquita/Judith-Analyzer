@@ -29,11 +29,10 @@ class AwsS3AllTweetUpload(AwsUploadsS3Abstract):
             limit = total_count
        
         if limit > 0:
-          for i in range(0, total_count, limit):
-             skip = i
-             tweets = self.twitter_db.find_raw_data_users( collection_name=collection_name, 
-                                                           skip=skip, 
-                                                           limit=limit)
+          for  skip in range(0, total_count, limit):
+
+             tweets = self.twitter_db.find_raw_data_users_paginator( collection_name=collection_name, 
+                                                                     skip=skip, limit=limit)
              for tweet in tweets:
                   try:
                      tweet_formatted = self.to_string(tweet)
@@ -54,11 +53,11 @@ class AwsS3AllTweetUpload(AwsUploadsS3Abstract):
             
         file_name =  'raw_data/all_raw_data/'+self.current_time+'/'+ self.file_name
         s3 = S3Connector()
+        print 'fazendo upload arquivo....'
         s3.upload_file( bucket_name=self.bucket_name,
                         file_name = file_name,
                         path_file=self.path_file )
-        
-        print 'fazendo upload arquivo....'
+                         
         s3_path_name = 's3n://'+self.bucket_name+'/'+file_name
         self.save_s3_jobs_upload(file_name=file_name,
                                  s3_path_name=s3_path_name,
@@ -69,7 +68,3 @@ class AwsS3AllTweetUpload(AwsUploadsS3Abstract):
         print 'S3: %s ' % ( s3_path_name)
         print 'FIM'
 
-
-if __name__ == '__main__':
-    aws = AwsS3AllTweetUpload()
-    aws.run()

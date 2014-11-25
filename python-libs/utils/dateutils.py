@@ -6,6 +6,7 @@ fmt = '%Y-%m-%d %H:%M:%S'
 def current_time():
     return datetime.now().strftime(fmt)
 
+
 def diff_data_minute( d1 ):
 
     d2 = current_time()

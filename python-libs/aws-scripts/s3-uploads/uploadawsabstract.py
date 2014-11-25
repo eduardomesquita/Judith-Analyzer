@@ -1,7 +1,7 @@
 import sys, json, datetime, os, time
 from datetime import datetime
 
-current_dir =  '/'.join( sys.path[0].split('/')[:-2] )
+current_dir =  '/'.join( sys.path[0].split('/')[:-1] )
 sys.path.append(current_dir + '/python-libs/connectors/mongo/')
 sys.path.append(current_dir + '/python-libs/aws-api/')
 sys.path.append(current_dir + '/python-libs/utils/')
@@ -20,18 +20,33 @@ class AwsUploadsS3Abstract(object):
         setattr(self, 'twitter_db', TwitterDB())
         setattr(self, 'config_db', ConfigDB())
         setattr(self, 'analyzer_db', AnalyzerDB())
+
         setattr(self, 'collections_names', ['twittersUsers', 'twittersTags'])
-        setattr(self, 'bucket_name', self.__get_aws_params__('aws_bucket_name'))
-        setattr(self, 'current_time', date_utils.current_time().replace(' ', '-').replace(':', '-'))
+        bucket_name = self.__get_params__('aws_bucket_name')
+        setattr(self, 'bucket_name', bucket_name)
+        current_time = date_utils.current_time().replace(' ', '-')\
+                                                .replace(':', '-')
+
+        setattr(self, 'current_time', current_time )
         setattr(self, 'start', date_utils.current_time())
         setattr(self, 'count', 0 )
         setattr(self, 'folder_name_save', folder_name_save)
+
+
+    def update_document_tweet(self, id_str, collection_name):
+        raise NotImplementedError()
+    def create_file(self, collection_name):
+        raise NotImplementedError()
+    def run(self):
+        raise NotImplementedError()
       
-    def __get_aws_params__(self, key):
-         return list( self.config_db.get_config(key) )[0]['value']
+
+    def __get_params__(self, key):
+        params = list( self.config_db.get_parameters( key))
+        return params[0]['value']
     
     def get_folder_name(self):
-        path_folder = self.__get_aws_params__( 'path_aws_uploads' )
+        path_folder = self.__get_params__( 'path_aws_uploads' )
         folder_name = self.folder_name_save+'/'+self.current_time
         os.mkdir(path_folder+'/'+folder_name+'/') 
         return path_folder+folder_name+'/'
@@ -52,19 +67,11 @@ class AwsUploadsS3Abstract(object):
       return data
 
     def save_s3_jobs_upload(self, file_name, s3_path_name, name):
-       
-        data = { 'pathS3Name' : s3_path_name,
-                 'counttweet' : self.count,
-                 'create_at': self.current_time,
-                 'runTimeMminutes' : date_utils.diff_data_minute(self.start), 
-                 'name' : name,
-                 'scriptsReader':[] }
-
+        data =  { 'pathS3Name' : s3_path_name,
+                  'counttweet' : self.count,
+                  'create_at': self.current_time,
+                  'runTimeMminutes' : date_utils.diff_data_minute(self.start), 
+                  'name' : name,
+                  'scriptsReader':[]
+                }
         self.config_db.save_jobs_upload_S3( **data )
-
-    def update_document_tweet(self, id_str, collection_name):
-        raise NotImplementedError()
-    def create_file(self, collection_name):
-        raise NotImplementedError()
-    def run(self):
-        raise NotImplementedError()

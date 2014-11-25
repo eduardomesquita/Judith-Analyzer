@@ -11,6 +11,7 @@ from twitterdb import *
 from configdb import ConfigDB
 from collections import OrderedDict
 import dateutils as date_utils
+from timeservice import TimeService
 
 urls = (
     
@@ -22,13 +23,16 @@ urls = (
     '/api/v.1/mediassocais/save/tweet/keywords', 'SaveKeyword',
     
     '/api/v.1/mapreduce/get/mapreduces', 'GetJobsMapReduce',
-    
+
     '/api/v.1/estudantes/get/status/(.*)', 'GetStatusStudents',
     '/api/v.1/estudantes/get/tweet/usersname/(.*)', 'GetTweetsByUserName',
-
     '/api/v.1/estudantes/blacklist/usersname/', 'AddBlackListUserName',
     '/api/v.1/estudantes/get/blacklist/(.*)', 'GetBlacklist',
     '/api/v.1/estudantes/remove/blacklist/', 'RemoveBlacklist',
+
+    '/api/v.1/configuracoes/update/', 'UpdateConfig',
+    '/api/v.1/configuracoes/get/', 'GetConfig',
+    '/api/v.1/configuracoes/executar/', 'ExecutarEmr',
     
     '/', 'NotFoundError'
 )
@@ -37,11 +41,13 @@ urls = (
 
 global twitter_db
 global config_db
-global proxy_analyzer 
+global proxy_analyzer
+global time_service
 
 config_db = ConfigDB()
 twitter_db =  TwitterDB()
 proxy_analyzer = AnalyzerProxy()
+time_service = TimeService( config_db )
 
 
 def unquote(url):
@@ -52,18 +58,16 @@ def unquote(url):
 class GraphicsStatusPorCent:
   def GET(self):
     global proxy_analyzer
-    student = proxy_analyzer.get_students_analyzer()
-    web.header('Content-Type', 'application/json')
-    return json.dumps(student.status_users)
+    #student = proxy_analyzer.get_students_analyzer()
+    #web.header('Content-Type', 'application/json')
+    #return json.dumps(student.status_users)
 
 class GraphicsStudentsLocation:
   def GET(self):
     global proxy_analyzer
-    student = proxy_analyzer.get_students_analyzer()
-    web.header('Content-Type', 'application/json')
-    return json.dumps(student.location)
-
-
+    #student = proxy_analyzer.get_students_analyzer()
+    #web.header('Content-Type', 'application/json')
+    #return json.dumps(student.location)
 
 
 
@@ -239,6 +243,95 @@ class RemoveBlacklist:
             return json.dumps({'status':'erro', 'ERRO': str(ex)})
 
 
+## configuracoes 
+
+
+class UpdateConfig:
+
+    def decode_url(self, data):
+        retorno = {}
+        for p in unquote(data).split('&'):
+            params = p.split('=')
+            if len(params) == 2:
+                (key, value) = params
+                retorno[key] = value
+            else:
+                raise Exception('parametros invalidos')
+        return retorno
+
+    def get_agendador(self, **config ):
+        agendador =  config['agendador'].split(' ')
+        if len(agendador) != 5:
+            raise Exception('erro agendandor incorreto')
+        (minutos, horas, diaMes, mes, diaSemana) = agendador
+        config['agendador'] = { 'minutos': minutos,
+                                'horas': horas,
+                                'diaMes': diaMes,
+                                'mes': mes,
+                                'diaSemana': diaSemana }
+        return config
+
+    def POST(self):
+
+        try:
+            data =  web.data()
+            config = self.decode_url( data )
+            global config_db
+            config = self.get_agendador( **config )
+            config_db.update_config_emr( **config )
+            
+            response =  json.dumps({'status': 'ok'})
+        except Exception as ex:
+           response = json.dumps({'status': 'ERRO', 'ERRO': str(ex)})
+
+        web.header('Content-Type', 'application/json')
+        return response
+
+class GetConfig:
+
+    def GET(self):
+        global config_db
+        config =  list(config_db.get_config_emr())
+
+        config[0]['scripts'] = []
+        for bjson in list(config_db.get_all_path_aws_script_mapper()):
+            bjson['type'] = 'MAPREDUCE'
+            config[0]['scripts'].append( bjson )
+
+        for bjson in list(config_db.get_all_path_aws_script_blacklist()):
+            bjson['type'] = 'BLACKLIST'
+            config[0]['scripts'].append( bjson )
+
+
+        web.header('Content-Type', 'application/json')
+        del config[0]['_id']
+        return json.dumps( config )
+
+
+class ExecutarEmr:
+
+    def decode_url(self, data):
+        retorno = {}
+        for p in unquote(data).split('&'):
+            params = p.split('=')
+            if len(params) == 2:
+                (key, value) = params
+                retorno[key] = value
+            else:
+                raise Exception('parametros invalidos')
+        return retorno
+
+    def POST(self):
+
+        #try:
+            data =  web.data()
+            emr = self.decode_url( data )
+            time_service.execute( emr['name'] )
+
+        #except Exception as ex:
+        #   response = json.dumps({'status': 'ERRO', 'ERRO': str(ex)})
+
+
 
 
 ## SERVER CONFIG
@@ -261,6 +354,9 @@ class Server(web.application):
 
 
 if __name__ == '__main__':
-  #print GetStatusStudents().GET('possible')
+  
+  
+  #time_service.start()
+
   app = Server(urls, globals())
   app.run()

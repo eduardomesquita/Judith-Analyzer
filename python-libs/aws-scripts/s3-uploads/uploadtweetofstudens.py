@@ -13,6 +13,11 @@ class AwsS3TweetsOfStudens(AwsUploadsS3Abstract):
         setattr(self, 'path_file', (self.get_folder_name() + self.file_name))
         setattr(self, 'collections_names', ['twittersUsers', 'twittersTags'] )
         setattr(self, 'students', {} )
+        self.__init__students__()
+
+
+
+    def __init__students__(self):
         for tweet in  self.analyzer_db.get_raw_data_students():
           self.students[tweet['userName']] = tweet['statusStudents']
 
@@ -46,22 +51,18 @@ class AwsS3TweetsOfStudens(AwsUploadsS3Abstract):
             
         file_name =  'raw_data/raw_data_students/'+self.current_time+'/'+ self.file_name
         s3 = S3Connector()
+        print 'realizand upload..'
         s3.upload_file( bucket_name=self.bucket_name,
                         file_name = file_name,
                         path_file=self.path_file )
-      
+        
+        print 'upload completo..'
         s3_path_name = 's3n://'+self.bucket_name+'/'+file_name
         self.save_s3_jobs_upload(file_name=file_name,
                                  s3_path_name=s3_path_name,
                                  name='raw_data_students')
 
-        print '\n\nDocumento importados: %s' % self.count
+        print '\n\nDocumento importados para s3: %s' % self.count
         print 'Em aproximadamente: %s minutos' % date_utils.diff_data_minute( self.start )
         print 'S3: %s ' % ( s3_path_name)
         print 'FIM'
-       
-
-
-if __name__ == '__main__':
-    aws = AwsS3TweetsOfStudens()
-    aws.run()

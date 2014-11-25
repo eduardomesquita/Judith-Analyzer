@@ -8,28 +8,36 @@ import boto.emr, time
 class AwsMapReduce(object):
 
     def __init__(self, map_reduce_config):
-        setattr(self, 'AWSKEY', USER_AUTH['AWSAccessKeyId'])
-        setattr(self, 'SECRETKEY', USER_AUTH['AWSSecretKey'])
+      setattr(self, 'AWSKEY', USER_AUTH['AWSAccessKeyId'])
+      setattr(self, 'SECRETKEY', USER_AUTH['AWSSecretKey'])
 
-        for conf in map_reduce_config:
-          for key, values in conf.iteritems():
-              setattr(self, key, values)
+      for conf in map_reduce_config:
+        for key, values in conf.iteritems():
+           setattr(self, key, values)
 
-    def __show_region_name__(self):
-        for regions in boto.emr.regions():
-            print regions
+    def get_instance_number(self):
+      return int(self.nInstancia)
+
+    def get_instance_master(self):
+      return self.masterInstance
+
+    def get_instance_slave(self):
+      return self.slaveInstance
+
+    def get_region(self):
+      return self.localizacao
 
     def __connect_instance_emr__(self):
-        kw_params = { 'aws_access_key_id': self.AWSKEY, 'aws_secret_access_key' : self.SECRETKEY}
-        conn = boto.emr.connect_to_region(self.region, **kw_params) 
-        return conn
+      kw_params = { 'aws_access_key_id': self.AWSKEY, 'aws_secret_access_key' : self.SECRETKEY}
+      conn = boto.emr.connect_to_region(self.get_region(), **kw_params) 
+      return conn
 
-    def __show_process_log__(self, job_id, state, conn ):
-          while state not in ['COMPLETED','FAILED']:
-            print "job state = %s - job id = %s " %  ( state, job_id )
-            time.sleep(30)
-            state = conn.describe_jobflow(job_id).state
-          return state
+    def __log_emr__(self, job_id, state, conn ):
+      while state not in ['COMPLETED','FAILED']:
+        print "job state = %s - job id = %s " %  ( state, job_id )
+        time.sleep(30)
+        state = conn.describe_jobflow(job_id).state
+      return state
 
     def create(self, name, input_file, output_file, log_file, mapper):
         conn = self.__connect_instance_emr__()
@@ -42,17 +50,14 @@ class AwsMapReduce(object):
         job_id = conn.run_jobflow( name=name + '-jobflow',
                                    log_uri=log_file,
                                    steps=[step],
-                                   master_instance_type=self.master_instance,
-                                   slave_instance_type=self.slaver_instance,
-                                   num_instances=int(self.n_instance))
+                                   master_instance_type=self.get_instance_slave(),
+                                   slave_instance_type=self.get_instance_master(),
+                                   num_instances=self.get_instance_number())
 
         state = conn.describe_jobflow(job_id).state
 
         if state == 'STARTING':
-            state  = self.__show_process_log__( job_id = job_id,
-                                                state = state,
-                                                conn = conn )
-
+            state  = self.__log_emr__( job_id = job_id, state = state, conn = conn )
         print "job state = %s - job id = %s " %  ( state, job_id )
         return state, job_id
 

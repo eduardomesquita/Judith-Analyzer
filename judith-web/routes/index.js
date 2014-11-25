@@ -12,7 +12,9 @@ URL_FIND_TWEET_USER      = 'http://'+SERVER+'/api/v.1/estudantes/get/tweet/users
 URL_INSERE_BLACKLIST     = 'http://'+SERVER+'/api/v.1/estudantes/blacklist/usersname/'
 URL_GET_BLACKLIST        = 'http://'+SERVER+'/api/v.1/estudantes/get/blacklist/'
 URL_REMOVE_BLACKLIST     = 'http://'+SERVER+'/api/v.1/estudantes/remove/blacklist/'
-
+URL_UPDATE_CONFIG		 = 'http://'+SERVER+'/api/v.1/configuracoes/update/'
+GET_CONFIG		         = 'http://'+SERVER+'/api/v.1/configuracoes/get/'
+EXECUTE_EMR 			 = 'http://'+SERVER+'/api/v.1/configuracoes/executar/'
 
 
 module.exports = function(app, passport){
@@ -200,10 +202,28 @@ module.exports = function(app, passport){
 	});
 
 	router.get('/configuracoes', function(req, res){
-		res.render('configuracoes',{});
+		
+		requestUtilies.request(GET_CONFIG,function( json_resquests ){
+			console.log(json_resquests[0])
+			res.render('configuracoes',{'resposta': json_resquests[0]});
+
+		});		
 	});
 
-	
+	router.post('/configuracoes', function(req, res){
+
+		requestUtilies.requestPost(URL_UPDATE_CONFIG, req.body, function( json_resquests ){
+			res.redirect('/configuracoes')
+	    });
+	});
+
+
+	router.post('/executarEmr', function(req, res){
+		requestUtilies.requestPost(EXECUTE_EMR, req.body, function( json_resquests ){
+			console.log( json_resquests );
+	    });
+	});
+
 
 	router.get('/porcentStudents', function(req, res){
 
