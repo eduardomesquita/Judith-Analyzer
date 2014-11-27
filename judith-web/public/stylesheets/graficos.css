@@ -1,0 +1,26 @@
+
+#graficos{
+
+    margin-left:2%;
+    margin-top: 4%;
+}
+
+
+#tabelasgraficos{
+
+    width: 100%;
+
+}
+
+#container-estudantes{
+    min-width:200px;
+    height: 400px;
+    max-width: 500px;
+}
+
+#container-teste{
+
+    min-width:200px;
+    height: 400px;
+    max-width: 500px;
+}

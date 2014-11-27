@@ -127,14 +127,13 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
         self.location = {}
         self.__aggregation_location__()
 
-        for i in  self.location :
-            print i
+      
 
-        #self.analyzer_db.save_cache_data('user_status_location', **self.location ) 
+        self.analyzer_db.save_cache_data('user_status_location', **self.location ) 
         
-        #self.created_at = {}
-        #self.__aggregation_creat_at__()
-        #self.analyzer_db.save_cache_data('user_status_created_at', **self.created_at ) 
+        self.created_at = {}
+        self.__aggregation_creat_at__()
+        self.analyzer_db.save_cache_data('user_status_created_at', **self.created_at ) 
 
         print 'Fim cache StudentsAnalyzer..'
 

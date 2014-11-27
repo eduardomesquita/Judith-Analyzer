@@ -13,6 +13,8 @@ module.exports = {
             if (!error && response.statusCode === 200) {
                 var json = JSON.parse(body);
                 callback(json);
+            }else{
+                console.log(error);
             }
         });
     },
@@ -30,30 +32,5 @@ module.exports = {
     },
 
 
-    get_midia_social : function ( json_resquests ){
-
-        response_json = [];
-        media_social = 'TWITTER';
-            
-        for(i in json_resquests){
-            palavra = ultimaAtualizacao = '';
-            linguagem = json_resquests[i].language;
-            if(linguagem == 'pt'){
-                linguagem = 'PT-BR';
-        }
-        ultimaAtualizacao = json_resquests[i].last_tweet_text;
-        for(word in json_resquests[i].keysWords){
-            palavra += '#' + json_resquests[i].keysWords[word] + ' ';
-        }
-        
-        response_json.push( {'media': media_social, 
-                             'palavra': palavra.toUpperCase(),
-                             'linguagem' : linguagem,
-                              'ultimaAtualizacao' : ultimaAtualizacao.toUpperCase().substring(0, 45)
-                            });
-        }
-
-       return response_json;
-    },
 
 }

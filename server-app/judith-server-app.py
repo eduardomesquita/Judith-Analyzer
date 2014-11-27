@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import web, sys, json, re, time
+from collections import OrderedDict
+
 current_dir =  '/'.join( sys.path[0].split('/')[:-1])
 sys.path.append(current_dir + '/python-libs/analyzers/')
 sys.path.append(current_dir + '/python-libs/connectores/')
@@ -61,16 +63,47 @@ def unquote(url):
 class GraphicsStatusPorCent:
   def GET(self):
     global proxy_analyzer
-    #student = proxy_analyzer.get_students_analyzer()
-    #web.header('Content-Type', 'application/json')
-    #return json.dumps(student.status_users)
+    student = proxy_analyzer.get_analysis(key='user_status_count')
+    web.header('Content-Type', 'application/json')
+    return json.dumps(student)
 
 class GraphicsStudentsLocation:
-  def GET(self):
-    global proxy_analyzer
-    #student = proxy_analyzer.get_students_analyzer()
-    #web.header('Content-Type', 'application/json')
-    #return json.dumps(student.location)
+
+
+    def clear_location(self, location):
+        if '/' in location:
+           location =  location.split('/')[0]
+        if ',' in location:
+           location =  location.split(',')[0]
+        if '-' in location:
+           location =  location.split('-')[0]
+
+        return location.strip().upper()
+
+    def clear(self, student):
+        tmp = {}
+        for json in student:
+           location=json['values']
+           for i in location :
+               for k, v in location[i]['location'].iteritems():
+                   k = self.clear_location(k)
+                   if not tmp.has_key(k):
+                       tmp[k] = 0
+                   tmp[k] += int(v)
+
+        print OrderedDict(sorted(tmp.items(), key=lambda t: t[0]))
+        
+                   
+
+    
+    def GET(self):
+        global proxy_analyzer
+        student = proxy_analyzer.get_analysis(key='user_status_location')
+        self.clear( student )
+
+        web.header('Content-Type', 'application/json')
+        return json.dumps(student)
+
 
 
 

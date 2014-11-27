@@ -146,10 +146,10 @@ class TimeService(Thread):
             print 'rodando time_service..'
 
             for conf in list(self.config_db.get_config_emr()):
-               #if self.check_contrab( **conf['agendador'] ) is True:
+               if self.check_contrab( **conf['agendador'] ) is True:
                     self.run_jobs()
-               #else:
-               #    print 'nao esta na hora de executar :/'
+               else:
+                   print 'nao esta na hora de executar :/'
             return 0
             time.sleep( 60 )
 

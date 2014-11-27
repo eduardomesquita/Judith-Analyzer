@@ -2,20 +2,21 @@ IP = '0.0.0.0'
 PORT = '5222'
 SERVER = IP+':'+PORT
 
-URL_GET_PORCENT_STUDENTS = 'http://'+SERVER+'/api/v.1/graphs/estudantes/porcentStatus'
-URL_GET_KEYWORDS         = 'http://'+SERVER+'/api/v.1/mediassocais/get/tweet/keywords'
-URL_DELETE_KEYWORDS      = 'http://'+SERVER+'/api/v.1/mediassocais/delete/tweet/Keywords'
-URL_SAVE_KEYWORDS        = 'http://'+SERVER+'/api/v.1/mediassocais/save/tweet/keywords'
-URL_GET_MAP_REDUCE       = 'http://'+SERVER+'/api/v.1/mapreduce/get/mapreduces'
-URL_FIND_STUDENTS        = 'http://'+SERVER+'/api/v.1/estudantes/get/status/<params>'
-URL_FIND_TWEET_USER      = 'http://'+SERVER+'/api/v.1/estudantes/get/tweet/usersname/<params>'
-URL_INSERE_BLACKLIST     = 'http://'+SERVER+'/api/v.1/estudantes/blacklist/usersname/'
-URL_GET_BLACKLIST        = 'http://'+SERVER+'/api/v.1/estudantes/get/blacklist/'
-URL_REMOVE_BLACKLIST     = 'http://'+SERVER+'/api/v.1/estudantes/remove/blacklist/'
-URL_UPDATE_CONFIG		 = 'http://'+SERVER+'/api/v.1/configuracoes/update/'
-GET_CONFIG		         = 'http://'+SERVER+'/api/v.1/configuracoes/get/'
-EXECUTE_EMR 			 = 'http://'+SERVER+'/api/v.1/configuracoes/executar/'
-FIND_LOGS 				 = 'http://'+SERVER+'/api/v.1/logs/find/'
+URL_GRAPHS_PORCENT_STUDENTS  = 'http://'+SERVER+'/api/v.1/graphs/estudantes/porcentStatus'
+URL_GRAPHS_LOCATION_STUDENTS = 'http://'+SERVER+'/api/v.1/graphs/estudantes/location'
+URL_GET_KEYWORDS         	 = 'http://'+SERVER+'/api/v.1/mediassocais/get/tweet/keywords'
+URL_DELETE_KEYWORDS      	 = 'http://'+SERVER+'/api/v.1/mediassocais/delete/tweet/Keywords'
+URL_SAVE_KEYWORDS        	 = 'http://'+SERVER+'/api/v.1/mediassocais/save/tweet/keywords'
+URL_GET_MAP_REDUCE       	 = 'http://'+SERVER+'/api/v.1/mapreduce/get/mapreduces'
+URL_FIND_STUDENTS        	 = 'http://'+SERVER+'/api/v.1/estudantes/get/status/<params>'
+URL_FIND_TWEET_USER      	 = 'http://'+SERVER+'/api/v.1/estudantes/get/tweet/usersname/<params>'
+URL_INSERE_BLACKLIST     	 = 'http://'+SERVER+'/api/v.1/estudantes/blacklist/usersname/'
+URL_GET_BLACKLIST        	 = 'http://'+SERVER+'/api/v.1/estudantes/get/blacklist/'
+URL_REMOVE_BLACKLIST     	 = 'http://'+SERVER+'/api/v.1/estudantes/remove/blacklist/'
+URL_UPDATE_CONFIG		 	 = 'http://'+SERVER+'/api/v.1/configuracoes/update/'
+GET_CONFIG		         	 = 'http://'+SERVER+'/api/v.1/configuracoes/get/'
+EXECUTE_EMR 			 	 = 'http://'+SERVER+'/api/v.1/configuracoes/executar/'
+FIND_LOGS 				 	 = 'http://'+SERVER+'/api/v.1/logs/find/'
 
 module.exports = function(app, passport){
 	
@@ -54,12 +55,43 @@ module.exports = function(app, passport){
   		 res.redirect('/');
 	});
 
+	// GRAFICOS
+
 	router.get('/graphs', function(req, res){
 		res.render('graphs.html');
 	});
 
+	router.get('/graphPorcentStudents', function(req, res){
+
+		requestUtilies.request(URL_GRAPHS_PORCENT_STUDENTS, function( json_resquests ){
+			response_object=json_resquests[0].values;
+			total = parseInt(response_object['possible'])  + parseInt(response_object['student']); 
+		 	response_object['total'] = total;
+		 	res.json({ 'response' : response_object });	
+		});
+	});
 
 
+	router.get('/graphLocationsStudents', function(req, res){
+
+
+		requestUtilies.request(URL_GRAPHS_LOCATION_STUDENTS, function( json_resquests ){
+			
+				locations = json_resquests[0].values;
+				for(i in locations){
+					console.log(locations[i].location);
+				}
+			
+
+			res.json({ 'response' : {} });
+		});
+
+	});
+
+
+
+
+	// HOME
 
 	router.get('/index', function(req, res){
 
@@ -70,6 +102,10 @@ module.exports = function(app, passport){
 		});		
 		
 	});
+
+
+
+	// Midias sociais
 
 	router.get('/midiassociais', function(req, res){
 		
@@ -125,6 +161,13 @@ module.exports = function(app, passport){
 	});
 
 
+
+
+
+	// MAPREDUCE
+
+
+
 	router.get('/mapreduce', function(req, res){
 		mapreduce = {};
 		requestUtilies.request(URL_GET_MAP_REDUCE, function( json_resquests ){
@@ -135,6 +178,16 @@ module.exports = function(app, passport){
 			res.render('mapreduce', {'mapreduce' : mapreduce});
 		});
 	});
+
+
+
+
+
+
+	// ESTUDANTES
+
+
+
 
 
 	router.post('/estudantesPost', function(req, res){
@@ -180,6 +233,10 @@ module.exports = function(app, passport){
 	});
 
 
+
+	// BLACKLIST TWEET
+
+
 	router.post('/insereusuarioblacklist', function(req, res){
 
 		requestUtilies.requestPost(URL_INSERE_BLACKLIST, req.body, function( json_resquests ){
@@ -209,6 +266,13 @@ module.exports = function(app, passport){
 	    });
 
 	});
+
+
+
+
+	// CONFIGURAÇÕES
+
+
 
 	router.get('/configuracoes', function(req, res){
 		
@@ -247,22 +311,7 @@ module.exports = function(app, passport){
 
 
 
-
-
-
-
-
-
-
-	router.get('/porcentStudents', function(req, res){
-
-		requestUtilies.request(URL_GET_PORCENT_STUDENTS, function( json_resquests ){
-			response=json_resquests;
-		 	response['total'] = parseInt(json_resquests['possible'])  + parseInt(json_resquests['student']); 
-		 	res.json({ 'response' : response });	
-		});
-	});
-
+	// 
 
 	app.use('/',router);	
 }
