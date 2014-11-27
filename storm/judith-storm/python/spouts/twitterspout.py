@@ -102,19 +102,20 @@ class TwitterSpout(storm.Spout):
 
     @classmethod
     def nextTuple(self):
-        #try:
+        try:
             
             twitter_db = TwitterDB()
             for method in ['by_tags','by_users']:
                 TwitterSpout.__find_tweets__( twitter_db=twitter_db, method=method )
                 
-        #except Exception as ex:
-        #    storm.emit( [ { 'erro' : '%s' % ex , 'CLASS' : 'FilterTwitter'}] )
-        #    time.sleep( 60 )
+        except Exception as ex:
+            storm.emit( [ { 'erro' : '%s' % ex , 'CLASS' : 'FilterTwitter'}] )
+            time.sleep( 60 )
+            
+        time.sleep( 600 )
 
 
 if __name__ == '__main__':
     log = logging.getLogger('TwitterSpout')
     log.debug('TwitterSpout loading...')
     TwitterSpout().run()
-    #TwitterSpout.nextTuple()

@@ -6,3 +6,10 @@ function execurar_emr( name ){
     
     });
 }
+
+
+function callAlert( msg ){
+    console.log('alert');
+    alert(msg);
+   
+}

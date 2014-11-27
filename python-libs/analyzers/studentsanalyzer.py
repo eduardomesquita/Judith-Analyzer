@@ -12,6 +12,8 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
         setattr(self, 'created_at', {})
         setattr(self, 'raw_data', {})
 
+   
+
 
     def get_raw_data(self, projection):
         self.raw_data = {}
@@ -68,7 +70,7 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
                                   'status_users' : self.users_status_name[ user ] }
             for bjson in list_bjson:
                 if bjson['user'].has_key('location'):
-                    location = bjson['user']['location']          
+                    location = bjson['user']['location']    
                     if location != '':
                         aggretation[user]['location'] = self.sum_dict(location, **aggretation[user]['location'])
             
@@ -112,6 +114,8 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
 
         self.users_status_name =  {}
         self.__count_user_status__()
+
+
         self.analyzer_db.save_cache_data('users_status_name', **self.users_status_name ) 
 
         self.status_users_count =  {'possible': 0, 'student':0}
@@ -122,11 +126,15 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
 
         self.location = {}
         self.__aggregation_location__()
-        self.analyzer_db.save_cache_data('user_status_location', **self.location ) 
+
+        for i in  self.location :
+            print i
+
+        #self.analyzer_db.save_cache_data('user_status_location', **self.location ) 
         
-        self.created_at = {}
-        self.__aggregation_creat_at__()
-        self.analyzer_db.save_cache_data('user_status_created_at', **self.created_at ) 
+        #self.created_at = {}
+        #self.__aggregation_creat_at__()
+        #self.analyzer_db.save_cache_data('user_status_created_at', **self.created_at ) 
 
         print 'Fim cache StudentsAnalyzer..'
 

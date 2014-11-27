@@ -75,3 +75,6 @@ class AwsUploadsS3Abstract(object):
                   'scriptsReader':[]
                 }
         self.config_db.save_jobs_upload_S3( **data )
+
+    def save_logs_s3(self, text):
+        self.config_db.save_log( **{'text':text, 'date': date_utils.current_time(), 'type' : 'UPLOAD'} )

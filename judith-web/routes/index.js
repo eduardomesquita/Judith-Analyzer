@@ -15,7 +15,7 @@ URL_REMOVE_BLACKLIST     = 'http://'+SERVER+'/api/v.1/estudantes/remove/blacklis
 URL_UPDATE_CONFIG		 = 'http://'+SERVER+'/api/v.1/configuracoes/update/'
 GET_CONFIG		         = 'http://'+SERVER+'/api/v.1/configuracoes/get/'
 EXECUTE_EMR 			 = 'http://'+SERVER+'/api/v.1/configuracoes/executar/'
-
+FIND_LOGS 				 = 'http://'+SERVER+'/api/v.1/logs/find/'
 
 module.exports = function(app, passport){
 	
@@ -58,13 +58,22 @@ module.exports = function(app, passport){
 		res.render('graphs.html');
 	});
 
+
+
+
 	router.get('/index', function(req, res){
-		res.render('index');
+
+		requestUtilies.request(FIND_LOGS,function( json_resquests ){
+			
+			scripts = {'primeiro' : 'Word-Count', 'segundo' : 'Find-Students', 'terceiro' : 'Blacklist'}
+			res.render('index', {'response' : json_resquests, 'scripts': scripts});
+		});		
+		
 	});
 
 	router.get('/midiassociais', function(req, res){
 		
-		 	requestUtilies.request(URL_GET_KEYWORDS, function( json_resquests ){
+		requestUtilies.request(URL_GET_KEYWORDS, function( json_resquests ){
 
 			response_json = [];
 			media_social = 'TWITTER';
@@ -95,7 +104,9 @@ module.exports = function(app, passport){
 	router.post('/excluirpesquisamidia' ,function(req, res){
 			requestUtilies.requestPost(URL_DELETE_KEYWORDS, req.body, function( json_resquests ){
 			if(json_resquests.status == 'ok'){
-					res.json({ 'response' : json_resquests.status });
+
+				    
+					res.json({ 'response' : json_resquests.status});
 			 }
 		    });
 
@@ -104,11 +115,13 @@ module.exports = function(app, passport){
 
 	router.post('/salvarpesquisamidia' ,function(req, res){
 
+		if(req.body.keysWords == ''){
 		requestUtilies.requestPost(URL_SAVE_KEYWORDS, req.body, function( json_resquests ){
 			if(json_resquests.status == 'ok'){
 				res.redirect('/midiassociais')
 			 }
 	    });
+		}
 	});
 
 
@@ -132,6 +145,7 @@ module.exports = function(app, passport){
 		url = URL_FIND_STUDENTS.replace(/<params>/g,'student');
 		requestUtilies.request( url, function( json_resquests ){
 			resultado = estudanteController.getEstudantesByStatus( json_resquests);
+		
 			res.render('estudantes', {		
 								'selected' : 'Estudantes',
 								'resultado' : resultado,
@@ -150,7 +164,7 @@ module.exports = function(app, passport){
 
 			resultado = estudanteController.getEstudantesByStatus( json_resquests);
 			res.render('estudantes', {		
-								'selected' : 'Estudantes',
+								'selected' : req.body.status,
 								'resultado' : resultado,
 								'campos' : ['Status' , 'Usuário', 'Cidade', 'Total tweets']});
 		});
@@ -164,11 +178,6 @@ module.exports = function(app, passport){
 		});
 
 	});
-
-
-
-
-
 
 
 	router.post('/insereusuarioblacklist', function(req, res){
@@ -223,6 +232,26 @@ module.exports = function(app, passport){
 			console.log( json_resquests );
 	    });
 	});
+
+
+	router.get('/configuracoes', function(req, res){
+		
+		requestUtilies.request(GET_CONFIG,function( json_resquests ){
+			console.log(json_resquests[0])
+			res.render('configuracoes',{'resposta': json_resquests[0]});
+
+		});		
+	});
+
+
+
+
+
+
+
+
+
+
 
 
 	router.get('/porcentStudents', function(req, res){

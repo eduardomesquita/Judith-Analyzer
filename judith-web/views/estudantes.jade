@@ -16,17 +16,17 @@ block content
                         th
                           td
                                 select(name='status' )
-                                    option(value='student',selected='estudante') Estudantes
-                                    option(value='possible',) Possíveis estudantes
+                                    option(value='student', selected=('#{selected}'==='student' ? "selected" : undefined)) Estudantes
+                                    option(value='possible', selected=('#{selected}'==='possible' ? "selected" : undefined)) Possíveis estudantes
                             td
                                 input(type='image', src='/images/pesquisar.png' alt='WWSubmit Form')
 
             div#bordaTabela
-                table.sortable#myTable.table.table-hover
+                table.sortable#myTableStudante.table.table-hover
                     thead
                         tr
                             each campo in campos
-                                td
+                               
                                 th.capitalize #{campo}
                             th Visualizar
 
@@ -36,17 +36,18 @@ block content
                     tbody
                         each dado in resultado
                             tr
-                                td 
-                                th.values  #{dado.status}
-                                td 
-                                th.values #{dado.usuario}
-                                td 
+                                
+                                th.values #{dado.status}
+                            
+                                th.values @#{dado.usuario}
+                                
+                              
                                 th.values #{dado.location}
-                                td
+                             
                                 th.values #{dado.total}
 
-                                td
+                                th
                                     input(type='image', src='/images/add2.png', onclick="visualizarEstudantes('#{dado.usuario}')")
 
-                                td
+                                th
                                     input(type='image', src='/images/apagar.png', onclick="insereBlackList('#{dado.usuario}')")

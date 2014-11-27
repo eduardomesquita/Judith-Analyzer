@@ -33,9 +33,12 @@ urls = (
     '/api/v.1/configuracoes/update/', 'UpdateConfig',
     '/api/v.1/configuracoes/get/', 'GetConfig',
     '/api/v.1/configuracoes/executar/', 'ExecutarEmr',
+
+    '/api/v.1/logs/find/', 'FindLogs',
     
     '/', 'NotFoundError'
 )
+
 
 
 
@@ -138,7 +141,7 @@ class GetJobsMapReduce:
     def GET(self):
         global config_db
         web.header('Content-Type', 'application/json')
-        return json.dumps(list( config_db.get_jobs_emr() ))
+        return json.dumps(list( config_db.get_jobs_emr())[::-1])
 
 class GetStatusStudents:
     def GET(self, status):
@@ -333,6 +336,24 @@ class ExecutarEmr:
 
 
 
+class FindLogs:
+
+    def GET(self):
+        global config_db
+        web.header('Content-Type', 'application/json')
+        
+        retorno = []
+        for item in list( config_db.find_log() ):
+            del item['_id']
+            retorno.append(item)
+
+        response = json.dumps({ 'retorno': retorno })
+        web.header('Content-Type', 'application/json')
+        return response
+
+   
+
+
 
 ## SERVER CONFIG
 
@@ -355,8 +376,7 @@ class Server(web.application):
 
 if __name__ == '__main__':
   
-  
-  #time_service.start()
+  time_service.start()
 
   app = Server(urls, globals())
   app.run()

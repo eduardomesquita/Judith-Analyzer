@@ -150,15 +150,21 @@ class TweetAnalyzer(  AnalyzerAbstract ):
         self.status_user_word = self.get_values_status( **self.status_user_word )
         self.course_word_status = self.get_values_status( **self.course_word_status )
 
+      
+
+
         self.location_word = self.get_values_location( **self.location_word )
         self.course_word_location =  self.get_values_location( **self.course_word_location)
        
-        self.analyzer_db.save_cache_data('word_count_status_user', **self.status_user_word ) 
-        self.analyzer_db.save_cache_data('word_count_all_students', **self.all_word ) 
-        self.analyzer_db.save_cache_data('word_count_status_location_user', **self.location_word )
-        self.analyzer_db.save_cache_data('word_count_course_word', **self.course_word )
-        self.analyzer_db.save_cache_data('word_course_word_status', **self.course_word_status )
-        self.analyzer_db.save_cache_data('word_course_word_location', **self.course_word_location )
+        for i in self.location_word:
+            print i
+
+        #self.analyzer_db.save_cache_data('word_count_status_user', **self.status_user_word ) 
+        #self.analyzer_db.save_cache_data('word_count_all_students', **self.all_word ) 
+        #self.analyzer_db.save_cache_data('word_count_status_location_user', **self.location_word )
+        #self.analyzer_db.save_cache_data('word_count_course_word', **self.course_word )
+        #self.analyzer_db.save_cache_data('word_course_word_status', **self.course_word_status )
+        #self.analyzer_db.save_cache_data('word_course_word_location', **self.course_word_location )
 
         print 'Fim cache TweetAnalyzer..'
         

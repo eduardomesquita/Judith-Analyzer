@@ -25,6 +25,10 @@ class MongoJudithAbstract(object):
     def find(self, match_criteria, collection_name):
         return self.mongo_db[ collection_name ].find( match_criteria )
 
+    def find_limit(self, match_criteria, collection_name ,limit):
+        return self.mongo_db[ collection_name ].find( match_criteria ).limit( limit )
+        
+
     def find_projection(self, match_criteria, projection,  collection_name):
         return self.mongo_db[ collection_name ].find( match_criteria, projection )
 

@@ -34,6 +34,16 @@ class ConfigDB( MongoJudithAbstract ):
     def collection_blacklist_script(self):
         return 'scriptsBlacklist'
 
+    def collection_log(self):
+        return 'logsjobs'
+
+    def save_log(self, **kargs):
+        self.save( data=kargs,collection_name=self.collection_log() )
+
+    def find_log(self, limit=20):
+        return self.find_limit( { '$query' : {},  '$orderby': { '_id' : -1 } } ,
+                        collection_name=self.collection_log(), limit=limit)
+
 
     def save_jobs_upload_S3(self, **kargs):
         self.save( data=kargs,collection_name=self.collection_s3() )
@@ -58,15 +68,14 @@ class ConfigDB( MongoJudithAbstract ):
                          collection_name=self.collection_parameters_config())
 
     def is_dust_analyzed(self):
-        return self.find({'status':"MAP_REDUCE"}, 
+        return self.find({'DUST': True}, 
                          collection_name=self.collection_dust_emr())
 
     def update_dust_analyzer(self):
-        match_criteria = {'status':"MAP_REDUCE"}
-        updated = {'status':"analyzed"}
+        match_criteria = {'DUST': True}
+        updated = {'DUST': False}
         self.update( match_criteria=match_criteria, 
-                     values=updated,
-                     collection_name=self.collection_dust_emr(),
+                     values=updated,collection_name=self.collection_dust_emr(),
                      upsert = False)
 
 
@@ -124,8 +133,6 @@ class ConfigDB( MongoJudithAbstract ):
     def get_jobs_emr_by_name(self, name):
       match_criteria = {'name':name}
       return self.find(match_criteria,collection_name=self.collection_jobs_emr())
-
-
 
 
 

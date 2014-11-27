@@ -1,4 +1,76 @@
 extends layout
 
 block content
+    script(src='/plugins/sortable.js')
+    script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js')
+    script(src='/javascripts/midiassociais.js')
+    script(src='/javascripts/requestsServer.js')
+    script(src='/javascripts/config.js')
+
+    - var trID = 1
+    div#container
+
+        div#tabelaDetalhada
+            h3 Atualizações
+
+
+        div#Legenda
+            label Legenda de sripts MapReduce
+
+            table(id='tablelegenda')
+                    tr
+                        td 
+                            label(for='cloud') #{scripts.primeiro}
+                        td 
+                            div#primeiro
+
+                        td 
+                            label(for='cloud') #{scripts.segundo}
+
+                        td 
+                            div#segundo
+
+                        td 
+                            label(for='cloud') #{scripts.terceiro}
+                        td 
+                            div#terceiro
+   
+
+
+        div#tabelaDetalhada
+            div#bordaTabela
+                table.sortable#myTableHome.table.table-hover
+                    thead
+                        tr
+                            th.capitalize
+                            th.capitalize Data
+                            th.capitalize Feeds
+                            th.capitalize Operação
+                            th.capitalize Job Name
+                            th.capitalize 
+
+                        - var count = 1
+                        each campo in response.retorno
+                            tr 
+                                
+                                th.capitalize #{count}
+                                th.capitalize #{campo.date}
+                                th.capitalize #{campo.text}
+                                th.capitalize #{campo.type}
+                                th.capitalize #{campo.JobsName}
+                                th.capitalize
+                                    if( campo.scriptName == 'FIND-STUDENTS' )
+                                      div#segundo
+                                    if( campo.scriptName == 'WORD-COUNT' )
+                                      div#primeiro
+                                    if( campo.scriptName == 'BLACKLIST-TWITTER' )
+                                      div#terceiro
+
+                                      
+                                    
+                                    
+                                        
+
+                            - count++
+
 

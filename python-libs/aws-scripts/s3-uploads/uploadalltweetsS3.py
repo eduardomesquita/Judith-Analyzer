@@ -46,25 +46,25 @@ class AwsS3AllTweetUpload(AwsUploadsS3Abstract):
                      break
 
     def run(self):
-        print 'salvando dados locais em %s' %  self.path_file
+        print 'salvando raw_data em: %s' %  self.path_file
         for name in self.collections_names:
-            print 'pesquisando collection name %s' % name
+            print 'collection name %s' % name
             self.create_file( name )
             
         file_name =  'raw_data/all_raw_data/'+self.current_time+'/'+ self.file_name
         s3 = S3Connector()
-        print 'fazendo upload arquivo....'
+        
+        print 'realizando upload..'
+        self.save_logs_s3(text='Enviando arquivos para Aws S3')
+
         s3.upload_file( bucket_name=self.bucket_name,
                         file_name = file_name,
                         path_file=self.path_file )
-                         
+                        
         s3_path_name = 's3n://'+self.bucket_name+'/'+file_name
         self.save_s3_jobs_upload(file_name=file_name,
                                  s3_path_name=s3_path_name,
                                  name='all_data')
 
-        print '\n\nDocumento importados: %s' % self.count
-        print 'Em aproximadamente: %s minutos' % date_utils.diff_data_minute( self.start )
-        print 'S3: %s ' % ( s3_path_name)
-        print 'FIM'
-
+        self.save_logs_s3(text='Documentos importados para Aws S3 : total %s em %s minutos' % \
+                                       (self.count, date_utils.diff_data_minute( self.start )))

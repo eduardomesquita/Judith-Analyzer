@@ -11,7 +11,7 @@ from s3lib import S3Connector
 import dateutils as date_utils
 
 
-class EMRController(object):
+class EmrAbstract(object):
 
     def __init__(self, name_config_emr, script_mapper_name):
         setattr(self, 'config_db', ConfigDB())
@@ -91,6 +91,7 @@ class EMRController(object):
 
 
     def __start__(self, input_file, script_name):
+
         (state, job_id) = self.aws_map_reduce.create(name=self.emr_name,
                                                      input_file=input_file,
                                                      output_file=self.output_file,
@@ -98,6 +99,8 @@ class EMRController(object):
                                                      mapper=self.__get_script_mapper__(name=script_name))
         setattr(self, 'state', state)
         setattr(self, 'job_id', job_id)
+
+        self.save_logs_emr(text='Jobs Elastic MapReduce terminado com satus: %s' % (state))
 
         if self.state == 'COMPLETED':
             return self.download_s3()
@@ -125,10 +128,7 @@ class EMRController(object):
 
         self.__init_atributes__( input_file )
 
-        print 'output: ' + self.output_file
-        print 'log: '    + self.log_file
-        print 'criando map reduce.. com %s instancias' %  self.aws_map_reduce.get_instance_number()
-        print 'nome EMR: %s ' % self.emr_name
+        self.save_logs_emr(text='Criando MapRreduce: Com %s instancias' %  self.aws_map_reduce.get_instance_number())
 
         imports_count = self.__start__( input_file, script_name )
 
@@ -181,4 +181,6 @@ class EMRController(object):
 
         return retorno
 
+    def save_logs_emr(self, text):
+        self.config_db.save_log( **{'text':text, 'date': date_utils.current_time(), 'type' : 'MAPREDUCE', 'JobsName' : self.emr_name, 'scriptName'  : self.script_mapper_name} )
 

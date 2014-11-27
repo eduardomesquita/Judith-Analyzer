@@ -4,8 +4,9 @@ block content
 	script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js')
 	script(src='/javascripts/midiassociais.js')
 	script(src='/javascripts/requestsServer.js')
+	
 
-	- var chave;
+	- var count;
 	div#container
 
 		div#tabelaDetalhada
@@ -31,12 +32,12 @@ block content
 									option(value='en',) EN-US
 							td
 								input(type='image', src='/images/add.png' alt='WWSubmit Form')
-							
-							
+	
 			div#bordaTabela
 				table.sortable#myTable.table.table-hover
 					thead
 						tr
+							
 							each campo in campos
 								td
 								th.capitalize #{campo}
@@ -46,7 +47,7 @@ block content
 					tbody
 						each dado in resultado
 							tr
-								td 
+								td
 								th.values  #{dado.palavra}
 								td 
 								th.values #{dado.media}
@@ -57,4 +58,6 @@ block content
 
 								td
 									input(type='image', src='/images/apagar.png', onclick="excluirPalavra('#{dado.palavra}')")
-						
+						- count++
+	
+			
