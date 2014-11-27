@@ -23,16 +23,21 @@ db = client['judith-twitter']
 
 #db.collection.ensureIndex( { a: 1 }, { unique: true, dropDups: true } )
 
-
-db.emrJobsConfig.insert({"name":"find-students", "count":0, "n_instance":1, "region":"sa-east-1", "master_instance":"m1.small", "slaver_instance":"m1.small" })
-db.emrJobsConfig.insert({"name":"word-count", "count":0, "n_instance":1, "region":"sa-east-1", "master_instance":"m1.small", "slaver_instance":"m1.small" })
-
-
+#analyzer
 db.studentsCountTweet.ensureIndex( { "userName": 1 }, { unique: true } )
-db.twittersUsers.ensureIndex( { "user.screen_name": 1}, {background: true} )
 db.studentsStatus.ensureIndex( { "userName": 1, "statusStudents" :1 }, { unique: true } )
 db.cacheAnalyzer.ensureIndex( { "name" :1 }, { unique: true } )
-db.wordCountStudents.ensureIndex( { "word": 1, "statusStudents" :1, "create_at": 1, "location" : 1 }, { unique: true } )
+
+
+
+#twiiter
+db.twittersUsers.ensureIndex( { "user.screen_name": 1}, {background: true} )
+
+db.scriptsBlacklist.insert({"name" : "BLACKLIST-TWITTER", "value" : "", "status" : "TERMINADO", "data" : "2014-11-26 21:14:59"})
+
+db.scriptsMapper.insert({"name" : "FIND-STUDENTS", "value" : "s3n://judith-project/scripts/findstudents.py", "status" : "UPLOAD_RAW_DATA", "data" : "2014-11-26 23:21:31"})
+db.scriptsMapper.insert({"name" : "WORD-COUNT", "value" : "s3n://judith-project/scripts/wordcountstudents.py", "status" : "COMPLETED", "data" : "2014-11-26 21:14:59"})
+
 
 #db['twittersTags'].ensure_index([('id_str',1), ('unique' , True)])
 #db['twittersUsers'].ensure_index([('id_str',1), ('unique' , True)])
