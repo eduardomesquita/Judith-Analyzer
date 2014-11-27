@@ -24,10 +24,10 @@ class BlackListTweet(object):
     def __insert_into_blacklist__(self, **kargs):
 
         imports = 0
-
         for search in list(self.twitter_db.find_all_search_users()):
+            print 'search para remove blacklist %s'  % search
 
-            if search['keysWords'][0] not in kargs.keys():
+            if search['keysWords'][0] not in kargs.keys():  ## todos que não forem studantes 
                 data = {'username' : search['keysWords'][0]}
                 data['created_at'] = date_utils.current_time()
                 try:

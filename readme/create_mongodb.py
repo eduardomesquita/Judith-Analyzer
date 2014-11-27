@@ -38,6 +38,7 @@ db.scriptsBlacklist.insert({"name" : "BLACKLIST-TWITTER", "value" : "", "status"
 db.scriptsMapper.insert({"name" : "FIND-STUDENTS", "value" : "s3n://judith-project/scripts/findstudents.py", "status" : "UPLOAD_RAW_DATA", "data" : "2014-11-26 23:21:31"})
 db.scriptsMapper.insert({"name" : "WORD-COUNT", "value" : "s3n://judith-project/scripts/wordcountstudents.py", "status" : "COMPLETED", "data" : "2014-11-26 21:14:59"})
 
+db.jobsEmrConfig.insert({"agendador" : { "diaSemana" : "*", "minutos" : "30", "horas" : "2", "mes" : "*", "diaMes" : "*" }, "masterInstance" : "m1.small", "armazenamento" : "Amazon S3", "framework" : "framework", "nInstancia" : "2", "localizacao" : "sa-east-1", "slaveInstance" : "m1.small", "cloud" : "aws" })
 
 #db['twittersTags'].ensure_index([('id_str',1), ('unique' , True)])
 #db['twittersUsers'].ensure_index([('id_str',1), ('unique' , True)])

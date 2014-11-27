@@ -158,7 +158,7 @@ class TimeService(Thread):
         
         for job in self.jobs:
             if job.name == name.strip():
-                print 'execuntando..'
+                print 'execuntando.. %s' % name
                 job.run( self.config_db  )
           
 

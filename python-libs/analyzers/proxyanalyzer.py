@@ -32,6 +32,7 @@ class AnalyzerProxy( AnalyzerInterface ):
     
 
     def is_dust(self):
+	print 'dust... %s' % len(list(self.config_db.is_dust_analyzed()))
         if len(list(self.config_db.is_dust_analyzed())) > 0:
             self.start()
             self.config_db.update_dust_analyzer()

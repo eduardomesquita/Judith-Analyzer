@@ -359,13 +359,16 @@ class ExecutarEmr:
 
     def POST(self):
 
-        #try:
+        try:
             data =  web.data()
             emr = self.decode_url( data )
             time_service.execute( emr['name'] )
+            response = {'status' : 'ok'}
+        except Exception as ex:
+           response = json.dumps({'status': 'ERRO', 'ERRO': str(ex)})
 
-        #except Exception as ex:
-        #   response = json.dumps({'status': 'ERRO', 'ERRO': str(ex)})
+        web.header('Content-Type', 'application/json')
+        return json.dumps( response )
 
 
 
