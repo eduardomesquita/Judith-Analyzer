@@ -5,9 +5,9 @@ from datetime import datetime
 from collections import OrderedDict
 
 if  platform.node() == 'eduardo-linux':
-        PATH = '/home/eduardo/Projetos/TCC/python-libs/analyzers/dictionary/dictionary.txt'
+        PATH = '/home/eduardo/Projetos/judith-project/judith-controllers/python-libs/analyzers/dictionary/dictionary.txt'
 else:
-        PATH ='/home/eduardo/Projetos/TCC/python-libs/analyzers/dictionary/dictionary.txt'
+        PATH ='/home/ubuntu/judith-project/python-libs/analyzers/dictionary/dictionary.txt'
 
 
 def read_dicinonary():

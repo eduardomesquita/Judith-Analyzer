@@ -129,12 +129,13 @@ class DeleteKeyWord:
         global twitter_db
         data =  web.data()
         web.header('Content-Type', 'application/json')
-
         try:
             keys_words = self.decode_url( data )
+            print 'estou apagando a palavra... %s' % ( keys_words )
             twitter_db.remove_keyswords( keys_words )
             response = json.dumps({'status': 'ok'})
-        except:
+        except Exception as e:
+            print 'erro  %s' % e
             response = json.dumps({'status': 'ERRO'})
 
         web.header('Content-Type', 'application/json')

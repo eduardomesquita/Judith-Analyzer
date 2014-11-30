@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 import json, pymongo
 from mongojudith import *
+import re
 
 
 class TwitterDB( MongoJudithAbstract ):
@@ -138,6 +139,10 @@ class TwitterDB( MongoJudithAbstract ):
                                          collection_name=self.collection_search_tags()))
 
     def remove_keyswords(self, array):
-        match_criteria = {"keysWords" : {'$all' : array} }
+        tmp = []
+        for item in array:
+            tmp.append( re.compile('^%s$'% item, re.IGNORECASE) )
+            
+        match_criteria = {"keysWords" : {'$all' : tmp} }
         self.remove( match_criteria=match_criteria,
                     collection_name=self.collection_search_tags())
