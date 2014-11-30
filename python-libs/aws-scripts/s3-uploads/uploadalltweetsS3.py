@@ -60,7 +60,8 @@ class AwsS3AllTweetUpload(AwsUploadsS3Abstract):
         s3.upload_file( bucket_name=self.bucket_name,
                         file_name = file_name,
                         path_file=self.path_file )
-                        
+        
+        print 'realizando upload..'
         s3_path_name = 's3n://'+self.bucket_name+'/'+file_name
         self.save_s3_jobs_upload(file_name=file_name,
                                  s3_path_name=s3_path_name,

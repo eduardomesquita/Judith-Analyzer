@@ -51,13 +51,13 @@ class AwsS3TweetsOfStudens(AwsUploadsS3Abstract):
             
         file_name =  'raw_data/raw_data_students/'+self.current_time+'/'+ self.file_name
         s3 = S3Connector()
-
+        print 'realizando upload..'
         self.save_logs_s3(text='Enviando arquivos para Aws S3')
 
         s3.upload_file( bucket_name=self.bucket_name,
                         file_name = file_name,
                         path_file=self.path_file )
-
+        print 'upload completo..'
         s3_path_name = 's3n://'+self.bucket_name+'/'+file_name
         self.save_s3_jobs_upload(file_name=file_name,
                                  s3_path_name=s3_path_name,

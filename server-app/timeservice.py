@@ -95,7 +95,6 @@ class TimeService(Thread):
         while num1 >= 0:
            num1 = num1 - num2
            if num1 >= 0:
-               print num1
                retorno.append(str(num1))
         return retorno
 
@@ -118,7 +117,6 @@ class TimeService(Thread):
 
     def check_contrab(self, **agendador):
         
-        print agendador
         now = datetime.datetime.now()
         if not  self.run_crontab( agendador['diaSemana'], date.today().weekday()):
             return False
@@ -148,10 +146,8 @@ class TimeService(Thread):
             for conf in list(self.config_db.get_config_emr()):
                if self.check_contrab( **conf['agendador'] ) is True:
                     self.run_jobs()
-               else:
-                   print 'nao esta na hora de executar :/'
             return 0
-            time.sleep( 60 )
+            time.sleep( 32 )
 
 
     def execute(self, name):

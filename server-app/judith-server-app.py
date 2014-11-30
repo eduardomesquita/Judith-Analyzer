@@ -150,7 +150,7 @@ class SaveKeyword:
             (key, valor) = values.split('=')
             if key == 'keysWords':
                 if valor != '':
-                    retorno[key] = [item.upper() for item in valor.split('#') if item != '']
+                    retorno[key] = [item.upper().strip() for item in valor.split('#') if item != '']
                 else:
                     raise Exception('values vazio')
             else:
