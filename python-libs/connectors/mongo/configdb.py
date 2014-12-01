@@ -76,7 +76,8 @@ class ConfigDB( MongoJudithAbstract ):
         updated = {'DUST': False}
         self.update( match_criteria=match_criteria, 
                      values=updated,collection_name=self.collection_dust_emr(),
-                     upsert = False)
+                     upsert = False,
+                     multi=True)
 
 
     def update_config_emr(self, **match_criteria):
