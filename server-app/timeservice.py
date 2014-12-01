@@ -26,7 +26,7 @@ class JobsBlackList( object ):
     def set_status(self, status, config_db):
         config_db.update_aws_script_blacklist( name=self.name , 
                                                **{'status':status,
-                                               'data': date_utils.current_time()} )
+                                               'data': date_utils.current_time(fmt='%d-%m-%Y %H:%M:%S')} )
 
     def run(self, config_db):
 
@@ -47,7 +47,7 @@ class JobsEmr( object ):
     def set_status(self, status, config_db):
         config_db.update_aws_script_mapper( name=self.name , 
                                             **{'status':status,
-                                               'data': date_utils.current_time()} )
+                                               'data': date_utils.current_time(fmt='%d-%m-%Y %H:%M:%S')} )
     def run(self, config_db):
         print 'executando jobs.. %s' % self.name
 

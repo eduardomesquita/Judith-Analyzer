@@ -102,5 +102,6 @@ class AnalyzerDB( MongoJudithAbstract ):
 
 
     def get_students_count_tweet(self, status):
+        print {'statusUsers':status}
         return self.find_projection( {'statusUsers':status},{'_id':0}, collection_name=self.default_students_count_tweet())
           

@@ -134,7 +134,7 @@ class EmrAbstract(object):
 
         log_map_reduce = {  'state':self.state,
                             'jobId':self.job_id,
-                            'date':date_utils.current_time(),
+                            'date':date_utils.current_time(fmt='%d-%m-%Y %H:%M:%S'),
                             'inputFile':input_file,
                             'scriptName' : script_name, 
                             'runTimeMinutes': date_utils.diff_data_minute(self.start),
@@ -182,5 +182,7 @@ class EmrAbstract(object):
         return retorno
 
     def save_logs_emr(self, text):
-        self.config_db.save_log( **{'text':text, 'date': date_utils.current_time(), 'type' : 'MAPREDUCE', 'JobsName' : self.emr_name, 'scriptName'  : self.script_mapper_name} )
+        self.config_db.save_log( **{'text':text, 'date': date_utils.current_time(fmt='%d-%m-%Y %H:%M:%S'), 
+                                    'type' : 'MAPREDUCE', 'JobsName' : self.emr_name,
+                                    'scriptName'  : self.script_mapper_name} )
 

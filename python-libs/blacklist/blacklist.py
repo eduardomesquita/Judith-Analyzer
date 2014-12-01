@@ -43,12 +43,10 @@ class BlackListTweet(object):
         remove_duplicate = {}
         for students in list(self.analyzer_db.get_raw_data_students()):
             remove_duplicate[ students['userName'] ] = 1
-
         self.__insert_into_blacklist__( **remove_duplicate )
 
     def save_logs_blacklist(self, text):
-        self.config_db.save_log( **{'text':text, 'date': date_utils.current_time(), 'type' : 'BLACKLIST', 'scriptName'  : 'BLACKLIST-TWITTER'} )
-
+        self.config_db.save_log( **{'text':text, 'date': date_utils.current_time(fmt='%d-%m-%Y %H:%M:%S'), 'type' : 'BLACKLIST', 'scriptName'  : 'BLACKLIST-TWITTER'} )
 
 
 if __name__ == '__main__':

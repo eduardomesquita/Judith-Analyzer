@@ -70,7 +70,7 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
                                   'status_users' : self.users_status_name[ user ] }
             for bjson in list_bjson:
                 if bjson['user'].has_key('location'):
-                    location = bjson['user']['location']    
+                    location = bjson['user']['location'].replace('.', '')   
                     if location != '':
                         aggretation[user]['location'] = self.sum_dict(location, **aggretation[user]['location'])
             
@@ -106,7 +106,6 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
                     aggretation[user]['created_tweet_at']['minute'] = self.sum_dict(s, **aggretation[user]['created_tweet_at']['minute'])
 
         self.created_at = aggretation
-
                
     def init(self):
 
@@ -126,9 +125,6 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
 
         self.location = {}
         self.__aggregation_location__()
-
-      
-
         self.analyzer_db.save_cache_data('user_status_location', **self.location ) 
         
         self.created_at = {}

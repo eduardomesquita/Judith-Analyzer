@@ -178,6 +178,18 @@ class GetJobsMapReduce:
         return json.dumps(list( config_db.get_jobs_emr())[::-1])
 
 class GetStatusStudents:
+
+    def order_by(self, count_tweet, students):
+        retorno = []
+        
+        for i in OrderedDict(sorted(count_tweet.items(), key=lambda t: t[0])):
+            for j  in students:
+               if j['totalTweet'] == i:
+                   retorno.append(j) 
+
+        return retorno[::-1]
+
+
     def GET(self, status):
         global proxy_analyzer
         global twitter_db
@@ -187,21 +199,27 @@ class GetStatusStudents:
             blacklist.append(bjson['username'])
 
         retorno = []
+        count_tweet = {}
         for students in proxy_analyzer.get_students_count_tweet(status):
+         
             if students['userName'] not in blacklist:
-                retorno.append( students  )
+                count_tweet[students['totalTweet']] = 1
+                retorno.append( students )
 
         web.header('Content-Type', 'application/json')
-        return json.dumps( retorno  )
+        return json.dumps( self.order_by(  count_tweet, retorno)  )
 
 class GetTweetsByUserName:
 
-    def order_by(self, cursor):
+    def order_by(self, cursors):
+
         created_at = {}
-        for bjson in  list(cursor):
-            ts = time.strftime('%Y-%m-%d %H:%M:%S',
-                        time.strptime(bjson['created_at'],'%a %b %d %H:%M:%S +0000 %Y'))
-            created_at[ts] = {'text': bjson['text'], 'name' :bjson['user']['name'], 'created_at' : ts }
+        for cursor in cursors:
+            for bjson in  list(cursor):
+                ts = time.strftime('%d-%m-%Y %H:%M:%S',
+                            time.strptime(bjson['created_at'],'%a %b %d %H:%M:%S +0000 %Y'))
+                
+                created_at[ts] = {'text': bjson['text'], 'name' :bjson['user']['name'], 'created_at' : ts }
 
         retorno = []
         for key in OrderedDict(sorted(created_at.items(), key=lambda t: t[0])):
@@ -210,9 +228,12 @@ class GetTweetsByUserName:
 
     def GET(self, user):
         global twitter_db
-        cursor = twitter_db.find_raw_data_users(user)
+        cursors = []
+        cursors.append(  twitter_db.find_raw_data_users(user) ) 
+        cursors.append(  twitter_db.find_raw_data_tags(user) )
+
         web.header('Content-Type', 'application/json')
-        return json.dumps(self.order_by( cursor ))
+        return json.dumps(self.order_by( cursors ))
 
 
 class AddBlackListUserName:
@@ -234,7 +255,7 @@ class AddBlackListUserName:
         try:
             data =  web.data()
             username = self.decode_url( data )
-            username['created_at'] = date_utils.current_time()
+            username['created_at'] = date_utils.current_time(fmt='%d-%m-%Y %H:%M:%S')
             twitter_db.insert_user_name_in_black_list( **username)
             web.header('Content-Type', 'application/json')
             return json.dumps({'status':'ok'})

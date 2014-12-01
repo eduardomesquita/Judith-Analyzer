@@ -26,6 +26,7 @@ class GroupStudentsAnalyzer(  AnalyzerAbstract ):
 
     def __filter__(self, **kargs):
         for user in  kargs.keys():
+
             student, possible = 0, 0
             if kargs[ user ].has_key('POSSIVEL'):
                 possible = int(kargs[user]['POSSIVEL'])
@@ -33,22 +34,22 @@ class GroupStudentsAnalyzer(  AnalyzerAbstract ):
                 student = int(kargs[user]['ESTUDANTE'])
            
             if possible >= student:
-               status = 'student'
+                status = 'possible'
             else:
-               status = 'possible'
+               status = 'student'
             
             self.users_status_name.append({ 'statusUsers'  : status,
                                             'totalTweet' : 0,
                                             'userName' : user })
 
-
+                 
     def find_user_name(self):
         for json_user in self.users_status_name:
             for cursor in self.twitter_db.get_raw_data_users( user_name=json_user['userName'],
-                                                             projection={'_id':0}):
-                for bjson in list(cursor):
-                    location = bjson['user']['location']
-                    json_user = self.emit( json_user, location, 1)
+                                                              projection={'_id':0}):
+                 for bjson in list(cursor):
+                     location = bjson['user']['location']
+                     json_user = self.emit( json_user, location, 1)
 
     def emit(self, json_user, location, count_tweet):
         json_user['location'] = location
@@ -63,6 +64,7 @@ class GroupStudentsAnalyzer(  AnalyzerAbstract ):
         self.find_user_name()
 
         for json_user in self.users_status_name:
+
             if json_user['totalTweet'] > 0:
                 self.analyzer_db.save_students_count_tweet( **json_user )
 

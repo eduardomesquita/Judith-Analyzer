@@ -1,15 +1,17 @@
 import datetime, time
 from datetime import datetime
 
-fmt = '%Y-%m-%d %H:%M:%S'
 
-def current_time():
+
+def current_time( fmt = '%Y-%m-%d %H:%M:%S' ):
     return datetime.now().strftime(fmt)
 
 
 def diff_data_minute( d1 ):
 
-    d2 = current_time()
+    fmt = '%Y-%m-%d %H:%M:%S'
+
+    d2 = current_time( fmt )
     d1 = datetime.strptime(d1, fmt)
     d2 = datetime.strptime(d2, fmt)
 

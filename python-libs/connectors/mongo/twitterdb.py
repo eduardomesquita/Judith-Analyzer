@@ -125,6 +125,10 @@ class TwitterDB( MongoJudithAbstract ):
         return self.find( {'user.screen_name':user_name}, 
                           collection_name=self.collection_tweet_users())
 
+    def find_raw_data_tags(self, user_name):
+        return self.find( {'user.screen_name':user_name}, 
+                          collection_name=self.default_collection_name())
+
     def save_key_words_by_username(self, user_name):
         data = {'language' : 'pt', 'keysWords' : [ user_name ], 'last_tweet_text' : '' }
         self.save( data = data, collection_name = self.collection_search_users() )
