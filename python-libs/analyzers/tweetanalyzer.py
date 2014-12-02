@@ -136,30 +136,32 @@ class TweetAnalyzer(  AnalyzerAbstract ):
 
     def emit_students(self, word, count, status, location):
         if word in self.dicionary: ##dicionario words
-            self.all_word = self.__aggretation_word__( word, count, **self.all_word)
+            #self.all_word = self.__aggretation_word__( word, count, **self.all_word)
 
             if status != 'None' and status != '' and status != None:
-                self.status_user_word = self.__aggretation_word_status__(word,count, 
-                                                                         status, **self.status_user_word)
-
+                #self.status_user_word = self.__aggretation_word_status__(word,count, 
+                #                                                        status, **self.status_user_word)
+                
                 if location != 'None' and location != '' and location != None:
-                    self.location_word= self.__aggretation_word_status_location__(word,count,
-                                                                                  status, location,
-                                                                                  **self.location_word)
+                    #self.location_word= self.__aggretation_word_status_location__(word,count,
+                     #                                                             status, location,
+                     #                                                             **self.location_word)
+                     pass 
 
     def emit_courses(self, word, count, status, location):
         if word in self.dicionary_courses: ## dicionario cursos
-            word = replace_name( word ).upper() 
-            self.course_word = self.__aggretation_word__( word, count, **self.course_word)
+            word = replace_name( word ).upper()
+            #self.course_word = self.__aggretation_word__( word, count, **self.course_word)
 
             if status != 'None' and status != '' and status != None:
                 self.course_word_status = self.__aggretation_word_status__(word,count, 
                                                                            status, **self.course_word_status)
             
-                if location != 'None' and location != '' and location != None:
-                    self.course_word_location=self.__aggretation_word_status_location__(word,count,
-                                                                                        status, location,
-                                                                                        **self.course_word_location)
+                #if location != 'None' and location != '' and location != None:
+                #    self.course_word_location=self.__aggretation_word_status_location__(word,count,
+                #                                                                        status, location,
+                #                                                                        **self.course_word_location)
+                pass
 
     def emit(self, bjson):
         word =  bjson['word'].upper() 
@@ -212,21 +214,21 @@ class TweetAnalyzer(  AnalyzerAbstract ):
 
         self.get_raw_data()
 
-        self.all_word = self.get_values_word( **self.all_word )
-        self.course_word = self.get_values_word( **self.course_word )
+        #self.all_word = self.get_values_word( **self.all_word )
+        #self.course_word = self.get_values_word( **self.course_word )
      
-        self.status_user_word = self.get_values_status( **self.status_user_word )
-        self.course_word_status = self.get_values_status( **self.course_word_status )
+        #self.status_user_word = self.get_values_status( **self.status_user_word )
+        #self.course_word_status = self.get_values_status( **self.course_word_status )
 
-        self.location_word = self.get_values_location( **self.location_word )
-        self.course_word_location =  self.get_values_location( **self.course_word_location)
+        #self.location_word = self.get_values_location( **self.location_word )
+        #self.course_word_location =  self.get_values_location( **self.course_word_location)
 
-        self.analyzer_db.save_cache_data('word_count_status_user', **self.status_user_word ) 
-        self.analyzer_db.save_cache_data('word_count_all_students', **self.all_word ) 
-        self.analyzer_db.save_cache_data('word_count_status_location_user', **self.location_word )
-        self.analyzer_db.save_cache_data('word_count_course_word', **self.course_word )
+        #self.analyzer_db.save_cache_data('word_count_status_user', **self.status_user_word ) 
+        #self.analyzer_db.save_cache_data('word_count_all_students', **self.all_word ) 
+        #self.analyzer_db.save_cache_data('word_count_status_location_user', **self.location_word )
+        #self.analyzer_db.save_cache_data('word_count_course_word', **self.course_word )
         self.analyzer_db.save_cache_data('word_course_word_status', **self.course_word_status )
-        self.analyzer_db.save_cache_data('word_course_word_location', **self.course_word_location )
+        #self.analyzer_db.save_cache_data('word_course_word_location', **self.course_word_location )
 
 
         self.status_user_word  = {}
