@@ -13,8 +13,6 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
         setattr(self, 'raw_data', {})
 
    
-
-
     def get_raw_data(self, projection):
         self.raw_data = {}
         for user_name in self.users_status_name.keys():
@@ -23,7 +21,8 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
             for cursor in self.twitter_db.get_raw_data_users( user_name=user_name,
                                                              projection=projection):
                 for bjson in list(cursor):
-                    self.raw_data[user_name].append(bjson)
+                    self.raw_data[user_name].append({'location': bjson['user']['location'],
+                                                     'created_at' : bjson['created_at']})
 
 
     def sum_dict(self, key, **kargs):
@@ -69,8 +68,8 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
             aggretation[user] = { 'location': {},
                                   'status_users' : self.users_status_name[ user ] }
             for bjson in list_bjson:
-                if bjson['user'].has_key('location'):
-                    location = bjson['user']['location'].replace('.', '')   
+                if bjson.has_key('location'):
+                    location = bjson['location'].replace('.', '')   
                     if location != '':
                         aggretation[user]['location'] = self.sum_dict(location, **aggretation[user]['location'])
             
@@ -96,14 +95,14 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
                         time.strptime(bjson['created_at'],'%a %b %d %H:%M:%S +0000 %Y'))
 
                     (data_str, time_str) = ts.split(' ')
-                    (y, m, d) = data_str.split('-')
-                    (h, m, s) = time_str.split(':')
-
+                    (y, mo, d) = data_str.split('-')
+                    (h, mi, s) = time_str.split(':')
+                    
                     aggretation[user]['created_tweet_at']['year'] = self.sum_dict(y, **aggretation[user]['created_tweet_at']['year'])
-                    aggretation[user]['created_tweet_at']['month'] = self.sum_dict(m, **aggretation[user]['created_tweet_at']['month'])
+                    aggretation[user]['created_tweet_at']['month'] = self.sum_dict(mo, **aggretation[user]['created_tweet_at']['month'])
                     aggretation[user]['created_tweet_at']['day'] = self.sum_dict(d, **aggretation[user]['created_tweet_at']['day'])
                     aggretation[user]['created_tweet_at']['hour'] = self.sum_dict(h, **aggretation[user]['created_tweet_at']['hour'])
-                    aggretation[user]['created_tweet_at']['minute'] = self.sum_dict(s, **aggretation[user]['created_tweet_at']['minute'])
+                    aggretation[user]['created_tweet_at']['minute'] = self.sum_dict(mi, **aggretation[user]['created_tweet_at']['minute'])
 
         self.created_at = aggretation
                
@@ -130,6 +129,10 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
         self.created_at = {}
         self.__aggregation_creat_at__()
         self.analyzer_db.save_cache_data('user_status_created_at', **self.created_at ) 
+
+        self.location =  {}
+        self.created_at = {}
+        self.raw_data =  {}
 
         print 'Fim cache StudentsAnalyzer..'
 

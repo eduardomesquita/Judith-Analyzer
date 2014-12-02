@@ -21,6 +21,72 @@ def read_dicinonary():
     return words.keys(), courses.keys()
 
 
+def replace_name( name):
+       
+        print 'replace name %s' % name
+        if name == 'ADM':
+           return 'ADMINISTRACAO'
+        if name == 'AMBIENTAL':
+            return 'ENG AMBIENTAL'
+        if name == 'cienciasbiologicas'.upper():
+            return 'Cienc Biologicas'
+        if name == 'biologicas'.upper():
+            return 'Cienc Biologicas'
+        if name == 'biologia'.upper():
+            return 'Cienc Biologicas'
+        if name == 'biologia'.upper():
+            return 'Cienc Biologicas'
+        if name == 'cienciascontabeis'.upper():
+            return 'Cienc Contabeis'
+        if name == 'contabeis'.upper():
+            return 'Cienc Contabeis'
+        if name == 'educacaofisica'.upper():
+            return 'Edu Fisica'
+        if name == 'educacao fisica'.upper():
+            return 'Edu Fisica'
+        if name == 'engenharia'.upper():
+            return 'Eng Civil'
+        if name == 'ambiental'.upper():
+            return 'Eng Ambiental'
+        if name == 'engenhariaambiental'.upper():
+            return 'Eng Ambiental'
+        if name == 'engenhariacivil'.upper():
+            return 'Eng Civil'
+        if name == 'eletrica'.upper():
+            return 'Eng Eletrica'
+        if name == 'engenhariaeletrica'.upper():
+            return 'Eng Eletrica'
+        if name == 'mecanica'.upper():
+            return 'Eng Mecanica'
+        if name == 'engenhariamecanica'.upper():
+            return 'Eng Mecanica'
+        if name == 'producao'.upper():
+            return 'Eng producao'
+        if name == 'engenhariadeproducao'.upper():
+            return 'Eng producao'
+        if name == 'engenhariadeproducao'.upper():
+            return 'Eng producao'
+        if name == 'engenharia quimica'.upper():
+            return 'Eng quimica'
+        if name == 'engenhariaquimica'.upper():
+            return 'Eng quimica'
+        if name == 'gestaocomercial'.upper():
+            return 'gestao comercial'
+        if name == 'publicidade'.upper():
+           return 'PUBLICIDADE E PROPAGANDA'
+        if name == 'publicidadeepropaganda'.upper():
+           return 'PUBLICIDADE E PROPAGANDA'
+        if name == 'publicidade'.upper():
+           return 'PUBLICIDADE E PROPAGANDA'
+        if name == 'propaganda'.upper():
+           return 'PUBLICIDADE E PROPAGANDA'
+        if name == 'sistemas'.upper():
+           return 'SISTEMAS DE INFORMACAO'
+        if name == 'sistemasdeinformacao'.upper():
+           return 'SISTEMAS DE INFORMACAO'
+        return name
+
+
 class TweetAnalyzer(  AnalyzerAbstract ):
 
     def __init__(self):
@@ -83,6 +149,7 @@ class TweetAnalyzer(  AnalyzerAbstract ):
 
     def emit_courses(self, word, count, status, location):
         if word in self.dicionary_courses: ## dicionario cursos
+            word = replace_name( word ).upper() 
             self.course_word = self.__aggretation_word__( word, count, **self.course_word)
 
             if status != 'None' and status != '' and status != None:
@@ -95,10 +162,11 @@ class TweetAnalyzer(  AnalyzerAbstract ):
                                                                                         **self.course_word_location)
 
     def emit(self, bjson):
-        word = bjson['word'].upper()
+        word =  bjson['word'].upper() 
         count = bjson['count']
         status = bjson['statusStudents']
-        location = bjson['location'].upper()
+        location = bjson['location'].replace('.','')
+
         self.emit_students(word=word, count=count, status=status, location=location)
         self.emit_courses(word=word, count=count, status=status, location=location)
 
@@ -152,14 +220,21 @@ class TweetAnalyzer(  AnalyzerAbstract ):
 
         self.location_word = self.get_values_location( **self.location_word )
         self.course_word_location =  self.get_values_location( **self.course_word_location)
-       
 
-        #self.analyzer_db.save_cache_data('word_count_status_user', **self.status_user_word ) 
-        #self.analyzer_db.save_cache_data('word_count_all_students', **self.all_word ) 
-        #self.analyzer_db.save_cache_data('word_count_status_location_user', **self.location_word )
-        #self.analyzer_db.save_cache_data('word_count_course_word', **self.course_word )
-        #self.analyzer_db.save_cache_data('word_course_word_status', **self.course_word_status )
-        #self.analyzer_db.save_cache_data('word_course_word_location', **self.course_word_location )
+        self.analyzer_db.save_cache_data('word_count_status_user', **self.status_user_word ) 
+        self.analyzer_db.save_cache_data('word_count_all_students', **self.all_word ) 
+        self.analyzer_db.save_cache_data('word_count_status_location_user', **self.location_word )
+        self.analyzer_db.save_cache_data('word_count_course_word', **self.course_word )
+        self.analyzer_db.save_cache_data('word_course_word_status', **self.course_word_status )
+        self.analyzer_db.save_cache_data('word_course_word_location', **self.course_word_location )
+
+
+        self.status_user_word  = {}
+        self.all_word = {}
+        self.location_word  = {}
+        self.course_word = {}
+        self.course_word_status = {}
+        self.course_word_location  = {}
 
         print 'Fim cache TweetAnalyzer..'
         

@@ -23,8 +23,8 @@ class AnalyzerProxy( AnalyzerInterface ):
             t2 = threading.Thread(name='Thread-2', target=self.tweet_analyzer.init)
             t3 = threading.Thread(name='Thread-3', target=self.group_students_analyzer.init)
 
-            #t1.start()
-            #t2.start()
+            t1.start()
+            t2.start()
             t3.start()
 
         except Exception as e:
