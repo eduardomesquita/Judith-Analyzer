@@ -38,20 +38,19 @@ class AnalyzerDB( MongoJudithAbstract ):
                                     projection=projection,
                                     collection_name=self.default_students_collections_word_count()).limit(100000)
 
+    def find_cache_data(self, **kargs):
+        return self.find_projection(match_criteria=kargs,
+                                    projection={'_id':0},
+                                    collection_name=self.default_students_collections_cache() )
 
-    def save_cache_data(self, key, **kargs ):
-        try:
-            data = {'name' : key, 'values' : kargs}
-            self.save( data=data, 
-                       collection_name=self.default_students_collections_cache())
+    def save_cache_data(self, **kargs):
+        self.save( data=kargs, 
+                   collection_name=self.default_students_collections_cache())
 
-        except pymongo.errors.DuplicateKeyError:
-            match_criteria = {'name': key}
-            values = {'values' : kargs}
-            self.update( match_criteria=match_criteria,
-                         values=values,
-                         collection_name=self.default_students_collections_cache(),
-                         upsert = False)
+    def update_cache_data(self, match_criteria, values):
+        self.update( match_criteria=match_criteria,
+                     values=values,
+                     collection_name=self.default_students_collections_cache())
 
 
     def save_students(self, user_name, status, count, create_at):
