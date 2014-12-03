@@ -19,13 +19,13 @@ class AnalyzerProxy( AnalyzerInterface ):
     def start(self):
         try:
             print 'inciando thread'
-            t1 = threading.Thread(name='Thread-1', target=self.students_analyzer.init)
+            #t1 = threading.Thread(name='Thread-1', target=self.students_analyzer.init)
             t2 = threading.Thread(name='Thread-2', target=self.tweet_analyzer.init)
-            t3 = threading.Thread(name='Thread-3', target=self.group_students_analyzer.init)
+            #t3 = threading.Thread(name='Thread-3', target=self.group_students_analyzer.init)
 
-            t1.start()
+            #t1.start()
             t2.start()
-            t3.start()
+            #t3.start()
 
         except Exception as e:
             print "Erro: nao foi possivel iniciar thread. %s" % e
@@ -35,7 +35,7 @@ class AnalyzerProxy( AnalyzerInterface ):
         print 'dust... %s' % len(list(self.config_db.is_dust_analyzed()))
         if len(list(self.config_db.is_dust_analyzed())) > 0:
             self.config_db.update_dust_analyzer()
-            self.start()
+        self.start()
 
     def get_analysis(self, key):
         self.is_dust()

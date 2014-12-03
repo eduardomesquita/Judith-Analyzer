@@ -22,8 +22,7 @@ def read_dicinonary():
 
 
 def replace_name( name):
-       
-        print 'replace name %s' % name
+
         if name == 'ADM':
            return 'ADMINISTRACAO'
         if name == 'AMBIENTAL':
@@ -86,7 +85,6 @@ def replace_name( name):
            return 'SISTEMAS DE INFORMACAO'
         return name
 
-
 class TweetAnalyzer(  AnalyzerAbstract ):
 
     def __init__(self):
@@ -121,8 +119,6 @@ class TweetAnalyzer(  AnalyzerAbstract ):
             kargs[status][location] = {}
         kargs[ status ][location] = self.sum_dict(word, count,**kargs[ status ][location])
         return kargs
-
-
 
     def sum_dict(self, key, count, **kargs):    
         if kargs.has_key( key ):
@@ -175,7 +171,9 @@ class TweetAnalyzer(  AnalyzerAbstract ):
 
     def get_raw_data(self, projection = {'_id':0, 'created_at':0}):
         for bjson in self.analyzer_db.get_raw_data_tweets( projection ):
-             self.emit(bjson)
+             pass
+             #self.emit(bjson)
+        print 'terminei ...'
 
     def sort_limit_10_great(self, dicts_tmp):
         lista_return = {}
@@ -239,7 +237,7 @@ class TweetAnalyzer(  AnalyzerAbstract ):
         self.course_word_location  = {}
 
         print 'Fim cache TweetAnalyzer..'
-        
+
 
 if __name__ == '__main__':
     TweetAnalyzer().init()
