@@ -63,8 +63,6 @@ def unquote(url):
 
 ## Graficos
 
-
-
 class GraphicsStatusPorCent:
   def GET(self):
     global proxy_analyzer
@@ -74,39 +72,27 @@ class GraphicsStatusPorCent:
 
 class GraphicsStudentsLocation:
 
-    def clear_location(self, location):
-        if '/' in location:
-           location =  location.split('/')[0]
-        if ',' in location:
-           location =  location.split(',')[0]
-        if '-' in location:
-           location =  location.split('-')[0]
-
-        return location.strip().split(' ')[0].upper()
-
-    def clear(self, student):
+ 
+    def count(self, student):
         tmp = {}
         retorno = []
-        for json in student:
-           location=json['values']
-           for i in location :
-               for k, v in location[i]['location'].iteritems():
-                   k = self.clear_location(k)
-                   if not tmp.has_key(k):
-                       tmp[k] = 0
-                   tmp[k] += int(v)
+        for location in student:
+           for status in location: 
+              for k, v in location[status]['location'].iteritems():
+                 if not tmp.has_key(k):
+                     tmp[k] = 0
+                 tmp[k] += int(v)
 
         sorted_list  = OrderedDict(sorted(tmp.items(), key=lambda t: t[1]))
         for i in sorted_list:
             retorno.append({ i : sorted_list[i]})
-
         return retorno[::-1]
-        
+
     
     def GET(self):
         global proxy_analyzer
         student = proxy_analyzer.get_analysis(key='user_status_location')
-        retorno = self.clear( student )
+        retorno = self.count( student )
         web.header('Content-Type', 'application/json')
         return json.dumps(retorno)
 
@@ -121,15 +107,14 @@ class GraphicsStudentsCreatedAtMouth:
         moths['student'] = {'1' : 0, '2' : 0 ,'3' : 0,'4' : 0, '5' : 0 ,'6' : 0, '7' : 0, '8' : 0 ,'9' : 0,'10' : 0, '11' : 0 ,'12' : 0}
         moths['possible'] = {'1' : 0, '2' : 0 ,'3' : 0,'4' : 0, '5' : 0 ,'6' : 0, '7' : 0, '8' : 0 ,'9' : 0,'10' : 0, '11' : 0 ,'12' : 0}
 
-        for i in data_raw[0]:
+        for username in data_raw[0]:
+        
+            status = data_raw[0][username]['status_users']
+            mes = data_raw[0][username]['created_tweet_at']['month']
+            for k , v in mes.iteritems():
+                moths[status][k] += int(v)
+                    
 
-            for j in data_raw[0][i]:
-                result = data_raw[0][i][j]
-                status =  result['status_users'] 
-                mes = result['created_tweet_at']['month']
-                for k , v in mes.iteritems():
-                    moths[status][k] += int(v)
-    
         return json.dumps(moths)
 
 
@@ -147,16 +132,12 @@ class GraphicsStudentsCreatedAtHour:
                             '08' : 0, '09' : 0, '10' : 0 ,'11' : 0,'12' : 0, '13' : 0, '14' : 0 ,'15' : 0,
                             '16' : 0, '17' : 0, '18' : 0 ,'19' : 0,'20' : 0,'21' : 0,'22' : 0,'23' : 0}
 
-        for i in data_raw[0]:
-
-            for j in data_raw[0][i]:
-                result = data_raw[0][i][j]
-                status =  result['status_users'] 
-                hour = result['created_tweet_at']['hour']
-              
-                for k , v in hour.iteritems():
-                    hours[status][k] += int(v)
-    
+        for username in data_raw[0]:
+            status = data_raw[0][username]['status_users']
+            hour = data_raw[0][username]['created_tweet_at']['hour']
+            for k , v in hour.iteritems():
+                hours[status][k] += int(v)
+     
         return json.dumps(hours)
 
 
@@ -165,11 +146,8 @@ class GraphicsStudentsCourse:
 
     def __get_courses__(self, data_raw):
         courses = []
-        for i in data_raw['values']['ESTUDANTE']:
-            courses.append( i )
-        
-        for i in data_raw['values']['POSSIVEL']:
-            courses.append( i )
+        for data in data_raw:
+            courses.append( data['word'] )
         courses.sort()
         return courses
 
@@ -177,17 +155,17 @@ class GraphicsStudentsCourse:
     def GET(self):
         global proxy_analyzer
         data_raw = proxy_analyzer.get_analysis(key='word_course_word_status')
-        retorno = {}
-        for i in self.__get_courses__( data_raw[0] ):
-            retorno[i] =  {'POSSIVEL' : {}, 'ESTUDANTE': {}}
+        response = {}
 
-        for i in data_raw[0]['values']['ESTUDANTE']:
-            retorno[i]['ESTUDANTE'] = data_raw[0]['values']['ESTUDANTE'][i]
+        for course in self.__get_courses__( data_raw ):
+            response[course] =  {'POSSIVEL' : 0, 'ESTUDANTE': 0}
+
+        for data in data_raw:
+            response[data['word']][data['status']] += int(data['count'])
         
-        for i in data_raw[0]['values']['POSSIVEL']:
-            retorno[i]['POSSIVEL'] = data_raw[0]['values']['POSSIVEL'][i]
+    
 
-        return json.dumps(retorno)
+        return json.dumps(response)
 
 
 ## Tweets

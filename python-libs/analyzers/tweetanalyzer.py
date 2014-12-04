@@ -89,14 +89,13 @@ class TweetAnalyzer(  AnalyzerAbstract ):
 
     def __init__(self):
         AnalyzerAbstract.__init__(self)
-
         dicionary, dicionary_courses = read_dicinonary()
         setattr(self, 'dicionary', dicionary)
         setattr(self, 'dicionary_courses', dicionary_courses)
 
-
     def __aggretation_word__(self, word, count, **kargs):
        return self.sum_dict(word, count, **kargs)
+
        
     def __aggretation_word_status__(self, word, count, status, name):
         data = list(self.analyzer_db.find_cache_data( **{'name' : name, 'status': status} ))
@@ -114,8 +113,7 @@ class TweetAnalyzer(  AnalyzerAbstract ):
 
             self.analyzer_db.save_cache_data( **{ 'name' : name, 
                                                   'status' : status,
-                                                  'word':word, 'count':count })  
-
+                                                  'word':word, 'count':count })
 
 
     def __aggretation_word_status_location__(self, word, count, status, location, **kargs):
@@ -183,7 +181,11 @@ class TweetAnalyzer(  AnalyzerAbstract ):
 
     def init(self):
         print 'Start cache TweetAnalyzer..'
+
+        self.analyzer_db.remove_cache(name='word_course_word_status')
+        
         self.get_raw_data()
+        
         print 'Fim cache TweetAnalyzer..'
 
 

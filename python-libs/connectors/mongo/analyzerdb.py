@@ -52,6 +52,11 @@ class AnalyzerDB( MongoJudithAbstract ):
                      values=values,
                      collection_name=self.default_students_collections_cache())
 
+    def remove_cache(self, name):
+        print 'apagando cache .. %s' % name
+        self.remove(match_criteria={'name':name}, 
+                    collection_name=self.default_students_collections_cache())
+
 
     def save_students(self, user_name, status, count, create_at):
         try:
@@ -84,11 +89,13 @@ class AnalyzerDB( MongoJudithAbstract ):
             pass
 
 
+
+
     def save_students_count_tweet(self, **kargs ):
         try:
+            print 'salvando estudntes...'
             self.save( data=kargs, 
                        collection_name=self.default_students_count_tweet())
-
         except pymongo.errors.DuplicateKeyError:
             match_criteria = {'userName': kargs['userName']}
             values = {  'statusUsers':kargs['statusUsers'], 

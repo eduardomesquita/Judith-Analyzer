@@ -18,14 +18,14 @@ class AnalyzerProxy( AnalyzerInterface ):
 
     def start(self):
         try:
-            print 'inciando thread'
-            #t1 = threading.Thread(name='Thread-1', target=self.students_analyzer.init)
+            print 'inciando thread...'
+            t1 = threading.Thread(name='Thread-1', target=self.students_analyzer.init)
             t2 = threading.Thread(name='Thread-2', target=self.tweet_analyzer.init)
-            #t3 = threading.Thread(name='Thread-3', target=self.group_students_analyzer.init)
+            t3 = threading.Thread(name='Thread-3', target=self.group_students_analyzer.init)
 
-            #t1.start()
+            t1.start()
             t2.start()
-            #t3.start()
+            t3.start()
 
         except Exception as e:
             print "Erro: nao foi possivel iniciar thread. %s" % e
@@ -44,3 +44,6 @@ class AnalyzerProxy( AnalyzerInterface ):
     def get_students_count_tweet(self, status):
         self.is_dust()
         return list( self.analyzer_db.get_students_count_tweet( status ) )
+
+if __name__ == '__main__':
+    AnalyzerProxy().get_analysis('user_status_count')
