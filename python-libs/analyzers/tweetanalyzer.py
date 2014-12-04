@@ -71,8 +71,7 @@ class TweetAnalyzer(  AnalyzerAbstract ):
 
 
     def __aggretation_word_status_location__(self, word, count, status, location, name):
-        print word, count, status, location
-
+       
         data = list(self.analyzer_db.find_cache_data( **{'name' : name, 'status': status, 'location' : location} ))
         if len(data) == 0:
             self.analyzer_db.save_cache_data( **{ 'name' : name, 
@@ -121,9 +120,10 @@ class TweetAnalyzer(  AnalyzerAbstract ):
 
 
     def emit(self, bjson):
-        word =  replace_utils.remove_non_ascii_chars(bjson['word'].upper()) 
-        status = replace_utils.remove_non_ascii_chars(bjson['statusStudents'])
         
+        status = bjson['statusStudents']
+        
+        word =  replace_utils.remove_non_ascii_chars(bjson['word'].upper()) 
         location = replace_utils.remove_non_ascii_chars( bjson['location'].replace('.','').upper())
         location =  replace_utils.get_location( location )
 

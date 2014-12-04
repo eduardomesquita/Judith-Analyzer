@@ -76,3 +76,4 @@ curso=sistemas
 curso=Zootecnia
 xicomine
 unipamnet
+avin

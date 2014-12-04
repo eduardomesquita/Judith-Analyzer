@@ -22,6 +22,8 @@ urls = (
     '/api/v.1/graphs/estudantes/createdAtMoth', 'GraphicsStudentsCreatedAtMouth',
     '/api/v.1/graphs/estudantes/createdAtHour', 'GraphicsStudentsCreatedAtHour',
     '/api/v.1/graphs/estudantes/course', 'GraphicsStudentsCourse',
+    '/api/v.1/graphs/findword/(.*)/(.*)', 'GraphicsFindfWord',
+    '/api/v.1/graphs/trendingtopics/(.*)', 'TrendingTopics',
 
     '/api/v.1/mediassocais/get/tweet/keywords', 'GetAllKeyWord',
     '/api/v.1/mediassocais/delete/tweet/Keywords', 'DeleteKeyWord',
@@ -45,8 +47,6 @@ urls = (
 )
 
 
-
-
 global twitter_db
 global config_db
 global proxy_analyzer
@@ -64,11 +64,17 @@ def unquote(url):
 ## Graficos
 
 class GraphicsStatusPorCent:
-  def GET(self):
-    global proxy_analyzer
-    student = proxy_analyzer.get_analysis(key='user_status_count')
-    web.header('Content-Type', 'application/json')
-    return json.dumps(student)
+    def GET(self):
+        try:
+            
+            global proxy_analyzer
+            student = proxy_analyzer.get_analysis(key='user_status_count')
+            web.header('Content-Type', 'application/json')
+            return json.dumps(student)
+
+        except Exception as e:
+            print 'erro  %s' % e
+            return json.dumps({'status': 'ERRO'})
 
 class GraphicsStudentsLocation:
 
@@ -90,55 +96,72 @@ class GraphicsStudentsLocation:
 
     
     def GET(self):
-        global proxy_analyzer
-        student = proxy_analyzer.get_analysis(key='user_status_location')
-        retorno = self.count( student )
-        web.header('Content-Type', 'application/json')
-        return json.dumps(retorno)
+        try:
+            
+            global proxy_analyzer
+            student = proxy_analyzer.get_analysis(key='user_status_location')
+            retorno = self.count( student )
+            web.header('Content-Type', 'application/json')
+            return json.dumps(retorno)
+
+        except Exception as e:
+            print 'erro  %s' % e
+            return json.dumps({'status': 'ERRO'})
 
 
 
 class GraphicsStudentsCreatedAtMouth:
 
     def GET(self):
-        global proxy_analyzer
-        data_raw = proxy_analyzer.get_analysis(key='user_status_created_at')
-        moths = {}
-        moths['student'] = {'1' : 0, '2' : 0 ,'3' : 0,'4' : 0, '5' : 0 ,'6' : 0, '7' : 0, '8' : 0 ,'9' : 0,'10' : 0, '11' : 0 ,'12' : 0}
-        moths['possible'] = {'1' : 0, '2' : 0 ,'3' : 0,'4' : 0, '5' : 0 ,'6' : 0, '7' : 0, '8' : 0 ,'9' : 0,'10' : 0, '11' : 0 ,'12' : 0}
+        try:
 
-        for username in data_raw[0]:
-        
-            status = data_raw[0][username]['status_users']
-            mes = data_raw[0][username]['created_tweet_at']['month']
-            for k , v in mes.iteritems():
-                moths[status][k] += int(v)
-                    
+            global proxy_analyzer
+            data_raw = proxy_analyzer.get_analysis(key='user_status_created_at')
+            moths = {}
+            moths['student'] = {'1' : 0, '2' : 0 ,'3' : 0,'4' : 0, '5' : 0 ,'6' : 0, '7' : 0, '8' : 0 ,'9' : 0,'10' : 0, '11' : 0 ,'12' : 0}
+            moths['possible'] = {'1' : 0, '2' : 0 ,'3' : 0,'4' : 0, '5' : 0 ,'6' : 0, '7' : 0, '8' : 0 ,'9' : 0,'10' : 0, '11' : 0 ,'12' : 0}
 
-        return json.dumps(moths)
+            for username in data_raw[0]:
+            
+                status = data_raw[0][username]['status_users']
+                mes = data_raw[0][username]['created_tweet_at']['month']
+                for k , v in mes.iteritems():
+                    moths[status][k] += int(v)
+
+            return json.dumps(moths)
+
+        except Exception as e:
+            print 'erro  %s' % e
+            return json.dumps({'status': 'ERRO'})
 
 
 
 class GraphicsStudentsCreatedAtHour:
 
     def GET(self):
-        global proxy_analyzer
-        data_raw = proxy_analyzer.get_analysis(key='user_status_created_at')
-        hours = {}
-        hours['student'] = {'00' : 0, '01' : 0 ,'02' : 0,'03' : 0, '04' : 0 ,'05' : 0, '06' : 0, '07' : 0,
-                            '08' : 0, '09' : 0, '10' : 0 ,'11' : 0,'12' : 0, '13' : 0, '14' : 0 ,'15' : 0,
-                            '16' : 0, '17' : 0, '18' : 0 ,'19' : 0,'20' : 0,'21' : 0,'22' : 0,'23' : 0}
-        hours['possible'] = {'00' : 0, '01' : 0 ,'02' : 0,'03' : 0, '04' : 0 ,'05' : 0, '06' : 0, '07' : 0,
-                            '08' : 0, '09' : 0, '10' : 0 ,'11' : 0,'12' : 0, '13' : 0, '14' : 0 ,'15' : 0,
-                            '16' : 0, '17' : 0, '18' : 0 ,'19' : 0,'20' : 0,'21' : 0,'22' : 0,'23' : 0}
+        try:
+            
+            global proxy_analyzer
+            data_raw = proxy_analyzer.get_analysis(key='user_status_created_at')
+            hours = {}
+            hours['student'] = {'00' : 0, '01' : 0 ,'02' : 0,'03' : 0, '04' : 0 ,'05' : 0, '06' : 0, '07' : 0,
+                                '08' : 0, '09' : 0, '10' : 0 ,'11' : 0,'12' : 0, '13' : 0, '14' : 0 ,'15' : 0,
+                                '16' : 0, '17' : 0, '18' : 0 ,'19' : 0,'20' : 0,'21' : 0,'22' : 0,'23' : 0}
+            hours['possible'] = {'00' : 0, '01' : 0 ,'02' : 0,'03' : 0, '04' : 0 ,'05' : 0, '06' : 0, '07' : 0,
+                                '08' : 0, '09' : 0, '10' : 0 ,'11' : 0,'12' : 0, '13' : 0, '14' : 0 ,'15' : 0,
+                                '16' : 0, '17' : 0, '18' : 0 ,'19' : 0,'20' : 0,'21' : 0,'22' : 0,'23' : 0}
 
-        for username in data_raw[0]:
-            status = data_raw[0][username]['status_users']
-            hour = data_raw[0][username]['created_tweet_at']['hour']
-            for k , v in hour.iteritems():
-                hours[status][k] += int(v)
-     
-        return json.dumps(hours)
+            for username in data_raw[0]:
+                status = data_raw[0][username]['status_users']
+                hour = data_raw[0][username]['created_tweet_at']['hour']
+                for k , v in hour.iteritems():
+                    hours[status][k] += int(v)
+         
+            return json.dumps(hours)
+
+        except Exception as e:
+            print 'erro  %s' % e
+            return json.dumps({'status': 'ERRO'})
 
 
 class GraphicsStudentsCourse:
@@ -153,20 +176,84 @@ class GraphicsStudentsCourse:
 
 
     def GET(self):
+        try:
+
+            global proxy_analyzer
+            data_raw = proxy_analyzer.get_analysis(key='word_course_status')
+            response = {}
+
+            for course in self.__get_courses__( data_raw ):
+                response[course] =  {'POSSIVEL' : 0, 'ESTUDANTE': 0}
+
+            for data in data_raw:
+                response[data['word']][data['status']] += int(data['count'])
+            
+            return json.dumps(response)
+
+        except Exception as e:
+            print 'erro  %s' % e
+            return json.dumps({'status': 'ERRO'})
+
+
+class GraphicsFindfWord:
+
+    def __sum__(self, words, bjson, retorno):
+        for w in words:
+            if w.upper() == bjson['word'].upper():
+                if retorno.has_key( bjson['location'] ):
+                    retorno[  bjson['location'] ]  +=  bjson['count']
+                else:
+                    retorno[  bjson['location'] ]  =  bjson['count']
+        return retorno
+
+    def GET(self, name, status):
+        try:
+            global proxy_analyzer
+            data_raw = proxy_analyzer.get_analysis(key='word_location_status')
+                    
+            retorno = {}
+            words = name.split(';')
+            status = status.upper()
+       
+            for bjson in data_raw:
+                print bjson
+                if bjson['status'] == status:
+                    retorno = self.__sum__( words, bjson, retorno )
+                    
+            print '\n\n'
+            return json.dumps(retorno)
+
+        except Exception as e:
+            print 'erro  %s' % e
+            return json.dumps({'status': 'ERRO'})
+
+
+class TrendingTopics:
+
+    def __sum__(self, bjson, tmp):
+        if tmp.has_key( bjson['word'].upper() ):
+            tmp[  bjson['word'].upper() ]  +=  bjson['count']
+        else:
+           tmp[  bjson['word'].upper() ]  =  bjson['count']
+        return tmp
+
+
+    def GET(self, status):
         global proxy_analyzer
-        data_raw = proxy_analyzer.get_analysis(key='word_course_status')
-        response = {}
+        data_raw = proxy_analyzer.get_analysis(key='word_status')
+        status  = status.upper()
+        tmp = {}
 
-        for course in self.__get_courses__( data_raw ):
-            response[course] =  {'POSSIVEL' : 0, 'ESTUDANTE': 0}
+        for bjson in data_raw:
+            if bjson['status'] == status:
+                tmp = self.__sum__( bjson, tmp )
 
-        for data in data_raw:
-            response[data['word']][data['status']] += int(data['count'])
+        retorno = []
+        for i in OrderedDict(sorted(tmp.items(), key=lambda t: t[1])):
+            retorno.append({i  : tmp[i]})
+
+        return json.dumps(retorno[::-1])
         
-    
-
-        return json.dumps(response)
-
 
 ## Tweets
 
@@ -174,9 +261,15 @@ class GraphicsStudentsCourse:
 
 class GetAllKeyWord:
     def GET(self):
-        global twitter_db
-        web.header('Content-Type', 'application/json')
-        return json.dumps(twitter_db.get_keys_word())
+        try:
+
+            global twitter_db
+            web.header('Content-Type', 'application/json')
+            return json.dumps(twitter_db.get_keys_word())
+
+        except Exception as e:
+            print 'erro  %s' % e
+            return json.dumps({'status': 'ERRO'})
 
 class DeleteKeyWord:
 
