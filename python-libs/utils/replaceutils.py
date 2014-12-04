@@ -11,8 +11,8 @@ def remove_non_ascii_chars(text):
    return text
 
 
-def clean_location(location):
-
+def get_location(location):
+    location  = location.upper()
     if 'PATOS' in location:
         return 'PATOS DE MIMAS'
     elif 'PATIMINAS' in location:
@@ -25,23 +25,9 @@ def clean_location(location):
         return 'SAO GOTARDO'
     elif 'VAZANTE' in location:
         return 'VAZANTE'
-    elif '/' in location:
-        location =  location.split('/')
-    elif ',' in location:
-        location =  location.split(',')
-    elif '-' in location:
-        location =  location.split('-')
-    
-    if isinstance( location, list):
-
-        print location
-        for i in location:
-            for j in i.split(' '):
-                if j in ['0','RUA', 'MINAS', 'BRASIL', 'MG', 'PRES', 'P', 'BR','BRAZIL','PE', 'MINHA']:
-                    return 'DESCONHECIDO'
-        return location[0]
-
-    return location
+    elif 'ARAXA' in location:
+        return 'ARAXA'
+    return None
 
 
 def replace_word( name):

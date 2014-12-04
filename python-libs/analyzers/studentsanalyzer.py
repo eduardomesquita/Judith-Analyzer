@@ -11,10 +11,6 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
 
     def __init__(self):
         AnalyzerAbstract.__init__(self)
-        setattr(self, 'users', {})
-        setattr(self, 'status_users_count', {'possible': 0, 'student':0})
-        setattr(self, 'location', {})
-        setattr(self, 'created_at', {})
         setattr(self, 'raw_data', {})
         setattr(self, 'users_status_name', {})
       
@@ -27,7 +23,10 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
              for cursor in self.twitter_db.get_raw_data_users( user_name=user_name,
                                                                projection=projection):
                  for bjson in list(cursor):
-                    self.raw_data[user_name].append({'location': bjson['user']['location'],
+                    location = replace_utils.remove_non_ascii_chars( bjson['user']['location'] )
+                    location =  replace_utils.get_location( location )
+                    if location is not None:
+                       self.raw_data[user_name].append({'location': location,
                                                       'created_at' : bjson['created_at']})
 
 
@@ -82,8 +81,6 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
                     location = bjson['location'].replace('.', '').upper()
                     
                     if len(location) >  3:
-                        location = replace_utils.remove_non_ascii_chars( location )
-                        location =  replace_utils.clean_location( location )
                         if aggretation[user]['location'].has_key( location ):
                            aggretation[user]['location'][location] += 1
                         else:

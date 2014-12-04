@@ -123,12 +123,15 @@ class TweetAnalyzer(  AnalyzerAbstract ):
     def emit(self, bjson):
         word =  replace_utils.remove_non_ascii_chars(bjson['word'].upper()) 
         status = replace_utils.remove_non_ascii_chars(bjson['statusStudents'])
-        location = replace_utils.remove_non_ascii_chars(bjson['location'].replace('.',''))
-        location = replace_utils.clean_location(location.upper())
-        count = bjson['count']
+        
+        location = replace_utils.remove_non_ascii_chars( bjson['location'].replace('.','').upper())
+        location =  replace_utils.get_location( location )
 
-        self.emit_students(word=word, count=count, status=status, location=location)
-        self.emit_courses(word=word, count=count, status=status, location=location)
+        if location is not None:
+            count = bjson['count']
+            self.emit_students(word=word, count=count, status=status, location=location)
+            self.emit_courses(word=word, count=count, status=status, location=location)
+
 
 
     def get_raw_data(self, projection = {'_id':0, 'created_at':0}):
@@ -149,6 +152,6 @@ class TweetAnalyzer(  AnalyzerAbstract ):
         self.get_raw_data()
         print 'Fim cache TweetAnalyzer..'
 
-        
+
 if __name__ == '__main__':
     TweetAnalyzer().init()
