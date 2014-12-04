@@ -1,48 +1,11 @@
 import time
 from datetime import datetime
 from abstract.analyzerabstract import *
-from unicodedata import normalize
 
-def remove_non_ascii_chars(text):
-   try:
-       text = normalize('NFKD', text)
-       text = text.encode('ASCII', 'ignore').decode('ASCII')
-   except TypeError:
-       text = normalize('NFKD', text.decode('UTF-8'))
-       text = text.encode('ASCII', 'ignore')
+current_dir =  '/'.join( sys.path[0].split('/')[:-1] )
+sys.path.append(current_dir + '/utils/')
+import replaceutils as replace_utils
 
-   return text
-
-
-
-def clean_location(location):
-
-    if 'PATOS' in location:
-        return 'PATOS DE MIMAS'
-    elif 'PATIMINAS' in location:
-        return 'PATOS DE MIMAS'
-    elif 'PRESIDENTE' in location:
-        return 'PRESIDENTE OLEGARIO'
-    elif 'CARMO' in location:
-        return 'CARMO DO PARANAIBA'
-    elif 'GOTARDO' in location:
-        return 'SAO GOTARDO'
-    elif 'VAZANTE' in location:
-        return 'VAZANTE'
-    elif '/' in location:
-        location =  location.split('/')
-    elif ',' in location:
-        location =  location.split(',')
-    elif '-' in location:
-        location =  location.split('-')
-    
-    if isinstance( location, list):
-        for i in location:
-            if i in ['0','RUA', 'MINAS', 'BRASIL', 'MG', 'PRES', 'P', 'BR','BRAZIL','PE', 'MINHA']:
-                return 'DESCONHECIDO'    
-        return location[0]  
-
-    return location
 
 class StudentsAnalyzer(  AnalyzerAbstract ):
 
@@ -119,8 +82,8 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
                     location = bjson['location'].replace('.', '').upper()
                     
                     if len(location) >  3:
-                        location = remove_non_ascii_chars( location )
-                        location =  clean_location( location )
+                        location = replace_utils.remove_non_ascii_chars( location )
+                        location =  replace_utils.clean_location( location )
                         if aggretation[user]['location'].has_key( location ):
                            aggretation[user]['location'][location] += 1
                         else:
@@ -159,8 +122,7 @@ class StudentsAnalyzer(  AnalyzerAbstract ):
                     aggretation[user]['created_tweet_at']['hour'] = self.__sum__(h, **aggretation[user]['created_tweet_at']['hour'])
                     aggretation[user]['created_tweet_at']['minute'] = self.__sum__(mi, **aggretation[user]['created_tweet_at']['minute'])
 
-        print aggretation
-
+    
         aggretation['name'] = 'user_status_created_at'
         self.analyzer_db.save_cache_data( **aggretation ) 
                

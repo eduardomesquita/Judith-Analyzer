@@ -154,7 +154,7 @@ class GraphicsStudentsCourse:
 
     def GET(self):
         global proxy_analyzer
-        data_raw = proxy_analyzer.get_analysis(key='word_course_word_status')
+        data_raw = proxy_analyzer.get_analysis(key='word_course_status')
         response = {}
 
         for course in self.__get_courses__( data_raw ):
