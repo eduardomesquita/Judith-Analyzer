@@ -40,6 +40,9 @@ class AwsMapReduce(object):
       return state
 
     def create(self, name, input_file, output_file, log_file, mapper):
+        print 'criando mapreduce com %s instancia' % self.get_instance_number()
+        print 'criando mapreduce com master %s slave %s' % (self.get_instance_master(), self.get_instance_slave())
+
         conn = self.__connect_instance_emr__()
         step = StreamingStep(  name=name,
                                mapper=mapper,
@@ -50,8 +53,8 @@ class AwsMapReduce(object):
         job_id = conn.run_jobflow( name=name + '-jobflow',
                                    log_uri=log_file,
                                    steps=[step],
-                                   master_instance_type=self.get_instance_slave(),
-                                   slave_instance_type=self.get_instance_master(),
+                                   master_instance_type=self.get_instance_master(),
+                                   slave_instance_type=self.get_instance_slave(),
                                    num_instances=self.get_instance_number())
 
         state = conn.describe_jobflow(job_id).state

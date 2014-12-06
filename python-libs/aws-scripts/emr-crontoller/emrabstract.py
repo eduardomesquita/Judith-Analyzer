@@ -17,9 +17,6 @@ class EmrAbstract(object):
         setattr(self, 'config_db', ConfigDB())
         setattr(self, 's3_connector', S3Connector())
         setattr(self, 'analyzer_db', AnalyzerDB())
-       
-        cursor=self.config_db.get_config_emr() 
-        setattr(self, 'aws_map_reduce', AwsMapReduce( cursor ))
         setattr(self, 'name_config_emr', name_config_emr)
         setattr(self, 'script_mapper_name', script_mapper_name)
 
@@ -34,6 +31,9 @@ class EmrAbstract(object):
         raise NotImplementedError()
 
     def __init_atributes__(self, input_file):
+        cursor=self.config_db.get_config_emr() 
+        setattr(self, 'aws_map_reduce', AwsMapReduce( cursor ))
+
         setattr(self,'imports_count', 0)
         setattr(self,'start', date_utils.current_time())
         setattr(self,'output_file', self.__get_output_path__( input_file ))

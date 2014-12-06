@@ -48,7 +48,13 @@ class AnalyzerProxy( AnalyzerInterface ):
 
     def get_students_count_tweet(self, status):
         self.is_dust()
-        return list( self.analyzer_db.get_students_count_tweet( status ) )
+
+        retorno = []
+        for user in  list( self.analyzer_db.get_cache_analysis( 'user_status_count' ) ):
+            if user['statusUsers'] == status:
+                retorno.append( user )
+
+        return retorno
 
 if __name__ == '__main__':
     AnalyzerProxy().get_analysis('user_status_count')

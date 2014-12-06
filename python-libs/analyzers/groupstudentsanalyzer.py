@@ -52,7 +52,7 @@ class GroupStudentsAnalyzer(  AnalyzerAbstract ):
                  json_user['totalTweet'] += 1
 
         json_user['name'] = self.name
-        self.analyzer_db.save_cache_data( **json_user)  
+        self.analyzer_db.save_cache_data( **json_user )  
 
  
     def init(self):
