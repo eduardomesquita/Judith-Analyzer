@@ -14,7 +14,7 @@ def remove_non_ascii_chars(text):
 def get_location(location):
     location  = location.upper()
     if 'PATOS' in location:
-        return 'PATOS DE MIMAS'
+        return 'PATOS DE MINAS'
     elif 'PATIMINAS' in location:
         return 'PATOS DE MIMAS'
     elif 'PRESIDENTE' in location:
@@ -33,7 +33,7 @@ def get_location(location):
 def replace_word( name):
 
         if name == 'ADM':
-           return 'ADMINISTRACAO'
+           return 'administracao'.upper()
         if name == 'cienciasbiologicas'.upper():
             return 'Cienc Biologicas'
         if name == 'biologicas'.upper():
@@ -77,10 +77,10 @@ def replace_word( name):
         if name == 'gestaocomercial'.upper():
             return 'gestao comercial'
         if name == 'publicidadeepropaganda'.upper():
-           return 'PUBLI E PROPAGANDA'
+           return 'publi propraganda'.upper()
         if name == 'sistemas'.upper():
-           return 'SIS INFO'
+           return 'sis info'.upper()
         if name == 'sistemasdeinformacao'.upper():
-           return 'SIS INFO'
+           return 'sis info'.upper()
         return name
 
