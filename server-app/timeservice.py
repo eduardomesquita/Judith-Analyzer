@@ -34,7 +34,7 @@ class JobsBlackList( object ):
         
         self.blacklist.add_black_list()
 
-        self.set_status(status='TERMINADO', config_db=config_db)
+        self.set_status(status='COMPLETED', config_db=config_db)
 
 
 class JobsEmr( object ):
